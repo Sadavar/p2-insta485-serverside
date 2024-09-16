@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+PRAGMA foreign_keys = ON;
+>>>>>>> refs/remotes/origin/main
 -- Users
 INSERT INTO users (username, fullname, email, filename, password, created)
 VALUES 
