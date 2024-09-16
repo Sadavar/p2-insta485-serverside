@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Insta485</title>
+    <style>
+      a {
+        font-weight: 600;
+        color: black;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <div style="display: flex">
+    <div style="flex: 1">
+      <a href="/">Insta485</a>
+    </div>
+    <div>
+      <a href="/explore/">
+        <em> explore </em>
+      </a>
+      |
+      <a href="/users/{{logname}}/">
+        <em> {{logname}} </em>
+      </a>
+    </div>
+  </div>
+  <div
+    style="
+      width: 800px;
+      max-width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    "
+  >
+    <h1>{{username}}</h1>
+    <div style="display: flex">
+      <p style="padding: 5px">{{total_posts}} posts</p>
+      <p style="padding: 5px">
+        <a href="/users/{{username}}/followers/"> {{followers}} followers </a>
+      </p>
+      <p style="padding: 5px">
+        <a href="/users/{{username}}/following/"> {{following}} following </a>
+      </p>
+    </div>
+    <p>{{fullname}}</p>
+    {% for post in posts %}
+    <div style="display: flex">
+      <a href="/posts/{{post.postid}}/">
+        <img
+          style="width: 350px; padding: 5px"
+          src="{{post.img_url}}"
+          alt="post 1"
+        />
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</html>
