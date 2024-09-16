@@ -1,32 +1,38 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <title>Insta485</title>
-    <style>
-      a {
-        font-weight: 600;
-        color: black;
-        text-decoration: none;
-      }
-    </style>
-  </head>
-  <div style="display: flex">
-    <div style="flex: 1">
-      <a href="/">Insta485</a>
-    </div>
-    <div>
-      <a href="/explore/">
-        <em> explore </em>
-      </a>
-      |
-      <a href="/users/{{logname}}/">
-        <em> {{logname}} </em>
-      </a>
-    </div>
+
+<head>
+  <title>Insta485</title>
+  <style>
+    a {
+      font-weight: 600;
+      color: black;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<div style="display: flex">
+  <div style="flex: 1">
+    <a href="/">Insta485</a>
   </div>
-  {% for post in posts %}
-  <div
-    style="
+  <div>
+    <a href="/explore/">
+      <em> explore </em>
+    </a>
+    |
+    <a href="/users/{{logname}}/">
+      <em> {{logname}} </em>
+    </a>
+  </div>
+</div>
+
+<h1>Users</h1>
+{% for user in users %}
+<p>{{user.username}} {{user.fullname}}</p>
+{% endfor %}
+
+{% for post in posts %}
+<div style="
       width: 400px;
       border-style: solid;
       border-color: black;
@@ -35,34 +41,30 @@
       max-width: fit-content;
       margin-left: auto;
       margin-right: auto;
-    "
-  >
-    <div style="display: flex">
-      <img
-        style="width: 30px; height: 30px"
-        src="{{post.owner_img_url}}"
-        alt="profile"
-      />
-      <p style="flex: 1">
-        <a href="/users/{{post.owner}}/">{{post.owner}}</a>
-      </p>
-      <p style="">
-        <a href="/posts/{{post.postid}}/"> {{post.timestamp}}</a>
-      </p>
-    </div>
-    <img style="width: 350px" src="{{post.img_url}}" alt="chickens" />
-    <div style="padding: 5px; width: 340px">
-      <p>
-        {% if post.likes == 1 %} {{post.likes}} like {% else %} {{post.likes}}
-        likes {% endif %}
-      </p>
-      {% for comment in post.comments %}
-      <p>
-        <a href="/users/{{comment.owner}}/">{{comment.owner}}</a>
-        {{comment.text}}
-      </p>
-      {% endfor %}
-    </div>
+    ">
+  <div style="display: flex">
+    <img style="width: 30px; height: 30px" src="{{post.owner_img_url}}" alt="profile" />
+    <p style="flex: 1">
+      <a href="/users/{{post.owner}}/">{{post.owner}}</a>
+    </p>
+    <p style="">
+      <a href="/posts/{{post.postid}}/"> {{post.timestamp}}</a>
+    </p>
   </div>
-  {% endfor %}
+  <img style="width: 350px" src="{{post.img_url}}" alt="chickens" />
+  <div style="padding: 5px; width: 340px">
+    <p>
+      {% if post.likes == 1 %} {{post.likes}} like {% else %} {{post.likes}}
+      likes {% endif %}
+    </p>
+    {% for comment in post.comments %}
+    <p>
+      <a href="/users/{{comment.owner}}/">{{comment.owner}}</a>
+      {{comment.text}}
+    </p>
+    {% endfor %}
+  </div>
+</div>
+{% endfor %}
+
 </html>
