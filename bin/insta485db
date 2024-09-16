@@ -1,0 +1,82 @@
+#!/bin/bash
+# insta485db
+
+# Stop on errors
+set -Eeuo pipefail
+
+# Sanity check command line options
+usage() {
+  echo "Usage: $0 (create|destroy|reset|dump)"
+}
+
+if [ $# -ne 1 ]; then
+  usage
+  exit 1
+fi
+
+# Define paths
+DB_PATH="var/insta485.sqlite3"
+UPLOADS_DIR="var/uploads"
+SCHEMA_FILE="sql/schema.sql"
+DATA_FILE="sql/data.sql"
+UPLOADS_SOURCE_DIR="sql/uploads"
+
+# Create database and upload directories
+create() {
+  if [ -f "$DB_PATH" ]; then
+    echo "Error: database already exists"
+    exit 1
+  fi
+  echo "Creating database and uploads directory..."
+  mkdir -p "$UPLOADS_DIR"
+  sqlite3 "$DB_PATH" < "$SCHEMA_FILE"
+  sqlite3 "$DB_PATH" < "$DATA_FILE"
+  cp -r "$UPLOADS_SOURCE_DIR"/* "$UPLOADS_DIR"
+  echo "Database created successfully."
+}
+
+# Remove the database and uploads directory
+destroy() {
+  echo "Destroying database and uploads directory..."
+  rm -rf "$DB_PATH" "$UPLOADS_DIR"
+  echo "Database and uploads removed."
+}
+
+# Reset the database (destroy and create)
+reset() {
+  echo "Resetting database..."
+  destroy
+  create
+  echo "Database reset complete."
+}
+
+# Dump the contents of the database
+dump() {
+  echo "Dumping database contents..."
+  sqlite3 -batch -line "$DB_PATH" 'SELECT * FROM users'
+  sqlite3 -batch -line "$DB_PATH" 'SELECT * FROM posts'
+  sqlite3 -batch -line "$DB_PATH" 'SELECT * FROM comments'
+  sqlite3 -batch -line "$DB_PATH" 'SELECT * FROM following'
+  sqlite3 -batch -line "$DB_PATH" 'SELECT * FROM likes'
+}
+
+# Parse argument
+case $1 in
+  "create")
+    create
+    ;;
+  "destroy")
+    destroy
+    ;;
+  "reset")
+    reset
+    ;;
+  "dump")
+    dump
+    ;;
+  *)
+    usage
+    exit 1
+    ;;
+esac
+
