@@ -20,13 +20,18 @@ def show_index():
     # Query database
     logname = "awdeorio"
     cur = connection.execute(
-        "SELECT username, fullname " "FROM users " "WHERE username != ?", (logname,)
+        "SELECT username, fullname "
+        "FROM users "
+        "WHERE username != ?",
+        (logname,)
     )
     users = cur.fetchall()
 
     cur = connection.execute(
-        "SELECT * " "FROM posts" "WHERE owner != ?",
-        (logname,),
+        "SELECT * "
+        "FROM posts "
+        "WHERE owner != ?",
+        (logname, )
     )
     posts = cur.fetchall()
 

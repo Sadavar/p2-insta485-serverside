@@ -26,11 +26,6 @@
   </div>
 </div>
 
-<h1>Users</h1>
-{% for user in users %}
-<p>{{user.username}} {{user.fullname}}</p>
-{% endfor %}
-
 {% for post in posts %}
 <div style="
       width: 400px;
@@ -43,15 +38,15 @@
       margin-right: auto;
     ">
   <div style="display: flex">
-    <img style="width: 30px; height: 30px" src="{{post.owner_img_url}}" alt="profile" />
+    <img style="width: 30px; height: 30px" src="" alt="profile" />
     <p style="flex: 1">
-      <a href="/users/{{post.owner}}/">{{post.owner}}</a>
+      <a href="/users/{{post.owner}}/">{{post.owner}} </a>
     </p>
-    <p style="">
-      <a href="/posts/{{post.postid}}/"> {{post.timestamp}}</a>
+    <p>
+      <a href="/posts/{{post.postid}}/"> {{post.created}} </a>
     </p>
   </div>
-  <img style="width: 350px" src="{{post.img_url}}" alt="chickens" />
+  <img style="width: 350px" src="/uploads/?filename={{post.filename}}" alt="chickens" />
   <div style="padding: 5px; width: 340px">
     <p>
       {% if post.likes == 1 %} {{post.likes}} like {% else %} {{post.likes}}
