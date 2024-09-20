@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Insta485</title>
+    <style>
+        a {
+            font-weight: 600;
+            color: black;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<div style="display: flex">
+    <div style="flex: 1">
+        <a href="/">Insta485</a>
+    </div>
+    <div>
+        <a href="/explore/">
+            <em> explore </em>
+          </a>
+          |
+          <a href="/users/{{logname}}/">
+            <em> {{logname}} </em>
+          </a>
+    </div>
+</div>
+<div style="
+      flex-direction: column;
+      max-width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    ">
+    <p>{{logname}}</p>
+    <form action="<FIXME_ACCOUNTS_URL_HERE>?target=<FIXME_ACCOUNTS_CREATE_HERE>" method="post" enctype="multipart/form-data">
+        <input type="submit" name="delete" value="confirm delete account"/>
+        <input type="hidden" name="operation" value="delete"/>
+    </form>
+</div>
+
+</html>
