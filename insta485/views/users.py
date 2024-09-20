@@ -55,7 +55,7 @@ def show_user(username):
     )
     followers = cur.fetchone()["follower_count"]
     for post in posts:
-        post["filename"] = f"/uploads/?filename={post['filename']}"
+        post["filename"] = f"/uploads/{post['filename']}"
 
     is_user = logname == username
     # check if logname is following

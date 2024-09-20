@@ -50,9 +50,7 @@
     {% for comment in comments %}
     <p>
       <a href="/users/{{comment.owner}}/">{{comment.owner}}</a>
-      {{comment.text}}
-      {% if comment.owner == logname %}
-      <!-- Delete comment if you own it -->
+      {{comment.text}} {% if comment.owner == logname %} <!-- Delete comment if you own it -->
     <form action="/comments/{{comment.commentid}}?target=/posts/{{post.postid}}" method="post"
       enctype="multipart/form-data">
       <input type="hidden" name="operation" value="delete" />
@@ -72,7 +70,6 @@
     {% endif %}
     <!-- Comment on Post -->
     <form action="/comments/{{post.postid}}?target=/posts/{{post.postid}}" method="post" enctype="multipart/form-data">
-      enctype="multipart/form-data">
       <input type="hidden" name="operation" value="insert" />
       <input type="hidden" name="postid" value="{{post.postid}}" />
       <input type="text" name="text" />
