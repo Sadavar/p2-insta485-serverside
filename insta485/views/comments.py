@@ -9,7 +9,7 @@ LOGGER = flask.logging.create_logger(insta485.app)
 def update_comments():
 
     # Extract data from the form
-    operation = request.form["operation"]
+    operation = request.form.get("operation")
     postid = request.form.get("postid")
     commentid = request.form.get("commentid")
     text = request.form.get("text")

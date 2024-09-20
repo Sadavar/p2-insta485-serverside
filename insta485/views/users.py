@@ -94,7 +94,7 @@ def show_followers(user_url_slug):
     )
     followers = cur.fetchall()
     for follower in followers:
-        follower["filename"] = f"/uploads/{follower['filename']}"
+        follower["filename"] = f"/uploads/{follower['filename']}/"
         # check if logname is following
         cur = connection.execute(
             "SELECT * FROM following WHERE username1 == ? AND username2 == ?",

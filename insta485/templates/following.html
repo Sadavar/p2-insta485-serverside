@@ -42,14 +42,14 @@
       {% if follower.username == logname %}
       {% elif follower.is_following%}
       following
-    <form action="/following/?target=/users/{{username}}/following" method="post" enctype="multipart/form-data">
+    <form action="/following/?target=/users/{{username}}/following/" method="post" enctype="multipart/form-data">
       <input type="submit" name="unfollow" value="unfollow" />
       <input type="hidden" name="username" value="{{follower.username}}" />
       <input type="hidden" name="operation" value="unfollow" />
     </form>
     {% else %}
     not following
-    <form action="/following/?target=/users/{{username}}/following" method="post" enctype="multipart/form-data">
+    <form action="/following/?target=/users/{{username}}/following/" method="post" enctype="multipart/form-data">
       <input type="submit" name="follow" value="follow" />
       <input type="hidden" name="username" value="{{follower.username}}" />
       <input type="hidden" name="operation" value="follow" />

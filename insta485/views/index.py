@@ -67,7 +67,7 @@ def show_index():
         post["owner_liked"] = owner_liked
 
         # get img urls for post
-        post["url"] = f"/uploads/{post['filename']}"
+        post["url"] = f"/uploads/{post['filename']}/"
 
         # get post owner img url
         cur = connection.execute(
@@ -77,7 +77,7 @@ def show_index():
             (post["owner"], )
         )
         owner = cur.fetchone()
-        post["owner_img_url"] = f"/uploads/{owner['filename']}"
+        post["owner_img_url"] = f"/uploads/{owner['filename']}/"
         print(f"post img url: {post["owner_img_url"]}")
 
         # oldest comment at the top, break tie with comment id

@@ -15,7 +15,7 @@ import insta485
 uploads_path = Path.cwd() / "sql" / "uploads"
 
 
-@insta485.app.route("/uploads/<filename>")
+@insta485.app.route("/uploads/<filename>/")
 def get_upload(filename):
     print(f"filename: {filename}", file=sys.stderr)
     if not filename:  # Route parameter is captured here

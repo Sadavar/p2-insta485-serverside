@@ -31,7 +31,7 @@ def show_post(postid_url_slug):
         return ("", 404)
 
     # add image urls to post
-    post["url"] = f"/uploads/{post['filename']}"
+    post["url"] = f"/uploads/{post['filename']}/"
 
     # get owner of post
     post_owner = post["owner"]
@@ -42,7 +42,7 @@ def show_post(postid_url_slug):
     owner = cur.fetchone()
 
     # add image url to owner
-    owner["url"] = f"/uploads/{owner['filename']}"
+    owner["url"] = f"/uploads/{owner['filename']}/"
 
     # Get likes for the post
     cur = connection.execute(
