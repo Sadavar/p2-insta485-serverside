@@ -1,0 +1,129 @@
+"""
+Insta485 users
+
+URLs include:
+/users/<user_url_slug>/
+/users/<user_url_slug>/followers/
+/users/<user_url_slug>/following/
+"""
+
+from pathlib import Path
+import sys
+import flask
+
+import insta485
+
+logname = "awdeorio"
+
+@insta485.app.route("/users/<username>/")
+def show_user(username):
+    """Display / route."""
+    # Connect to database
+    connection = insta485.model.get_db()
+
+    # Get user
+    cur = connection.execute(
+        "SELECT * "
+        "FROM users "
+        "WHERE username == ?",
+        (username, )
+    )
+    user = cur.fetchone()
+    print(user, file=sys.stderr)
+
+    # Get array of posts
+    cur = connection.execute(
+        "SELECT * "
+        "FROM posts "
+        "WHERE owner == ?",
+        (username, )
+    )
+    posts = cur.fetchall()
+    print(posts, file=sys.stderr)
+
+    # Get following
+    cur = connection.execute(
+        "SELECT COUNT(*) AS following_count FROM following WHERE username1 == ?",
+        (username, )
+    )
+    following = cur.fetchone()["following_count"]
+
+    # Get followers
+    cur = connection.execute(
+        "SELECT COUNT(*) AS follower_count FROM following WHERE username2 == ?",
+        (username, )
+    )
+    followers = cur.fetchone()["follower_count"]
+    for post in posts:
+        post["filename"] = f"/uploads/?filename={post['filename']}"
+
+    is_user = logname == username
+    # check if logname is following
+    cur = connection.execute(
+        "SELECT * FROM following WHERE username1 == ? AND username2 == ?",
+        (logname, username)
+    )
+    is_following = cur.fetchone() is not None
+
+
+    # Add database info to context
+    context = {"username": user["username"], "posts": posts, "fullname": user["fullname"], "total_posts": len(posts), "following": following, "followers": followers, "is_user": is_user, "is_following": is_following}
+    return flask.render_template("user.html", **context)
+
+@insta485.app.route("/users/<username>/followers/")
+def show_followers(username):
+    # Connect to database
+    connection = insta485.model.get_db()
+    # Get followers
+    cur = connection.execute(
+        "SELECT * FROM following WHERE username2 == ?",
+        (username, )
+    )
+    followers = cur.fetchall()
+    followers = [follower["username1"] for follower in followers]
+    print(followers, file=sys.stderr)
+    # Get follower profiles
+    cur = connection.execute(
+        "SELECT * FROM users WHERE username IN ({seq})".format(seq=','.join(['?']*len(followers))),
+        followers
+    )
+    followers = cur.fetchall()
+    for follower in followers:
+        follower["filename"] = f"/uploads/{follower['filename']}"
+        # check if logname is following
+        cur = connection.execute(
+            "SELECT * FROM following WHERE username1 == ? AND username2 == ?",
+            (logname, follower["username"])
+        )
+        follower["is_following"] = cur.fetchone() is not None
+    context = {"followers": followers, "logname": logname}
+    return flask.render_template("followers.html", **context)
+
+@insta485.app.route("/users/<username>/following/")
+def show_following(username):
+    # Connect to database
+    connection = insta485.model.get_db()
+    # Get followers
+    cur = connection.execute(
+        "SELECT * FROM following WHERE username1 == ?",
+        (username, )
+    )
+    following = cur.fetchall()
+    following = [follower["username2"] for follower in following]
+    print(following, file=sys.stderr)
+    # Get follower profiles
+    cur = connection.execute(
+        "SELECT * FROM users WHERE username IN ({seq})".format(seq=','.join(['?']*len(following))),
+        following
+    )
+    following = cur.fetchall()
+    for follower in following:
+        follower["filename"] = f"/uploads/{follower['filename']}"
+        # check if logname is following
+        cur = connection.execute(
+            "SELECT * FROM following WHERE username1 == ? AND username2 == ?",
+            (logname, follower["username"])
+        )
+        follower["is_following"] = cur.fetchone() is not None
+    context = {"following": following, "logname": logname}
+    return flask.render_template("following.html", **context)
