@@ -7,6 +7,8 @@ URLs include:
 import sys
 import flask
 import arrow
+from flask import request
+from pathlib import Path
 
 import insta485
 
@@ -43,3 +45,27 @@ def show_edit():
 def show_password():
     context = {"logname": logname}
     return flask.render_template("accounts_password.html", **context)
+
+@insta485.app.route("/accounts/", methods=["POST"])
+def update_accounts():
+    print(request.form, file=sys.stderr)
+    print("poooooooooooop", file=sys.stderr)
+    connection = insta485.model.get_db()
+    # Default target to '/' if not provided
+    target = request.args.get("target", "/")
+
+    username = request.form["username"]
+    fullname = request.form["fullname"]
+    email = request.form["email"]
+    password = request.form["password"]
+    filename = request.files["file"]
+    operation = request.form["operation"]
+
+    if operation == "create":
+        filename.save(Path.cwd() / "sql" / "uploads" / filename.filename)
+        connection.execute(
+            "INSERT INTO users (USERNAME, FULLNAME, EMAIL, PASSWORD, FILENAME) VALUES (?, ?, ?, ?, ?)",
+            (username, fullname, email, password, filename.filename)
+        )
+
+    return flask.redirect(target)

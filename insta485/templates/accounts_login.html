@@ -28,8 +28,14 @@
       margin-right: auto;
     ">
     <form action="<FIXME_ACCOUNTS_URL_HERE>?target=<FIXME_INDEX_URL_HERE>" method="post" enctype="multipart/form-data">
-        <input type="text" name="username" placeholder="username" required/>
-        <input type="password" name="password" placeholder="password" required/>
+    <p>
+        <label for="u"><strong>Username</strong></label>
+        <input id="u" type="text" name="username" placeholder="username" required/>
+    </p>
+    <p>
+        <label for="p"><strong>Password</strong></label>
+        <input id="p" type="password" name="password" placeholder="password" required/>
+    </p>
         <input type="submit" value="login"/>
         <input type="hidden" name="operation" value="login"/>
       </form>

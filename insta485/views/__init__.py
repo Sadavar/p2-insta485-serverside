@@ -9,3 +9,4 @@ from insta485.views.likes import update_likes
 from insta485.views.comments import update_comments
 from insta485.views.accounts import show_login, show_create, show_delete
 from insta485.views.following import update_following
+from insta485.views.accounts import show_login, show_create, show_delete, update_accounts, show_edit, show_password
