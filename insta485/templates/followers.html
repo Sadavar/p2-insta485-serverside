@@ -32,10 +32,11 @@
       margin-right: auto;
     "
   >
+    <h1>Followers</h1>
     {% for follower in followers %}
     <div style="display: flex; flex-direction: row; align-items: center">
       <img
-        src="{{follower.user_img_url}}"
+        src="{{follower.filename}}"
         style="height: 30px; width: 30px; padding: 20px"
         alt="profile"
       />
@@ -43,8 +44,21 @@
         <a href="/users/{{follower.username}}/"> {{follower.username}} </a>
       </em>
       <p style="padding: 20px">
-        {% if follower.username == logname %} {% elif
-        follower.logname_follows_username %} following {% else %} not following
+        {% if follower.username == logname %}
+        {% elif follower.is_following %} 
+        following
+        <form action="<FIXME_FOLLOWING_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
+          <input type="submit" name="unfollow" value="unfollow"/>
+          <input type="hidden" name="username" value="<FIXME_USERNAME_HERE>"/>
+          <input type="hidden" name="operation" value="unfollow"/>
+        </form>
+        {% else %}
+        not following
+        <form action="<FIXME_FOLLOWING_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
+          <input type="submit" name="follow" value="follow"/>
+          <input type="hidden" name="username" value="<FIXME_USERNAME_HERE>"/>
+          <input type="hidden" name="operation" value="follow"/>
+        </form>
         {% endif %}
       </p>
     </div>
