@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Insta485</title>
+    <style>
+        a {
+            font-weight: 600;
+            color: black;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<div style="display: flex">
+    <div style="flex: 1">
+        <a href="/">Insta485</a>
+    </div>
+    <div>
+        <a href="/accounts/login">
+            <em> login </em>
+        </a>
+    </div>
+</div>
+<div style="
+      flex-direction: column;
+      max-width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    ">
+    <form action="<FIXME_ACCOUNTS_URL_HERE>?target=<FIXME_INDEX_URL_HERE>" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" required/>
+        <input type="text" name="fullname" placeholder="full name" required/>
+        <input type="text" name="username" placeholder="username" required/>
+        <input type="text" name="email" placeholder="email" required/>
+        <input type="password" name="password" placeholder="password" required/>
+        <input type="submit" name="signup" value="sign up"/>
+        <input type="hidden" name="operation" value="create"/>
+    </form>
+    <p>Have an account? <a href="/accounts/login/">Log in</a></p>
+</div>
+
+</html>
