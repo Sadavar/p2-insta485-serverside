@@ -7,7 +7,7 @@ URLs include:
 import sys
 import flask
 import arrow
-from flask import request, session
+from flask import request, abort, session
 from pathlib import Path
 import uuid
 import hashlib
@@ -85,35 +85,61 @@ def show_password():
 
 @insta485.app.route("/accounts/", methods=["POST"])
 def update_accounts():
+    logname = session.get("logname")
     connection = insta485.model.get_db()
     # Default target to '/' if not provided
     target = request.args.get("target", "/")
-
-    username = request.form["username"]
-    fullname = request.form["fullname"]
-    email = request.form["email"]
-    password = request.form["password"]
-    filename = request.files["file"]
     operation = request.form["operation"]
 
-    password_db_string = get_hashed_password(password)
-
     if operation == "create":
+        if logname is not None:
+            return flask.redirect(target)
+
+        username = request.form["username"]
+        fullname = request.form["fullname"]
+        email = request.form["email"]
+        password = request.form["password"]
+        filename = request.files["file"]
+        password_db_string = get_hashed_password(password)
+
         filename.save(Path.cwd() / "sql" / "uploads" / filename.filename)
         connection.execute(
             "INSERT INTO users (USERNAME, FULLNAME, EMAIL, PASSWORD, FILENAME) VALUES (?, ?, ?, ?, ?)",
             (username, fullname, email, password_db_string, filename.filename)
         )
+    elif operation == "login":
+        if logname is not None:
+            return flask.redirect(target)
+
+        username = request.form["username"]
+        password = request.form["password"]
+        if username == "" or password == "":
+            abort(400)
+        password_db_string = get_hashed_password(password)
+        user = connection.execute(
+            "SELECT * FROM users WHERE USERNAME = ? AND PASSWORD = ?",
+            (username, password_db_string)
+        ).fetchone()
+        if user:
+            session["logname"] = username
+            return flask.redirect(target)
+        else:
+            abort(403)
     elif operation == "edit_account":
+        fullname = request.form["fullname"]
+        email = request.form["email"]
+        filename = request.files["file"]
+
         # Delete the old file
         old_filename = connection.execute(
             "SELECT FILENAME FROM users WHERE USERNAME = ?",
             (logname, )
         ).fetchone()
         old_file_path = Path.cwd() / "sql" / "uploads" / \
-            old_filename["FILENAME"]
-        old_file_path.delete()
+            old_filename['filename']
+        old_file_path.unlink()
         filename.save(Path.cwd() / "sql" / "uploads" / filename.filename)
+        # Update the user's information
         connection.execute(
             "UPDATE users SET FULLNAME = ?, EMAIL = ?, FILENAME = ? WHERE USERNAME = ?",
             (fullname, email, filename.filename, logname)
