@@ -15,8 +15,9 @@ import insta485
 
 logname = "awdeorio"
 
-@insta485.app.route("/users/<username>/")
-def show_user(username):
+@insta485.app.route("/users/<user_url_slug>/")
+def show_user(user_url_slug):
+    username = user_url_slug
     """Display / route."""
     # Connect to database
     connection = insta485.model.get_db()
@@ -70,8 +71,9 @@ def show_user(username):
     context = {"username": user["username"], "posts": posts, "fullname": user["fullname"], "total_posts": len(posts), "following": following, "followers": followers, "is_user": is_user, "is_following": is_following, "logname": logname}
     return flask.render_template("user.html", **context)
 
-@insta485.app.route("/users/<username>/followers/")
-def show_followers(username):
+@insta485.app.route("/users/<user_url_slug>/followers/")
+def show_followers(user_url_slug):
+    username = user_url_slug
     # Connect to database
     connection = insta485.model.get_db()
     # Get followers
@@ -99,8 +101,9 @@ def show_followers(username):
     context = {"followers": followers, "logname": logname}
     return flask.render_template("followers.html", **context)
 
-@insta485.app.route("/users/<username>/following/")
-def show_following(username):
+@insta485.app.route("/users/<user_url_slug>/following/")
+def show_following(user_url_slug):
+    username = user_url_slug
     # Connect to database
     connection = insta485.model.get_db()
     # Get followers
