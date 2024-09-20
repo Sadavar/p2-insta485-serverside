@@ -38,12 +38,15 @@
       margin-right: auto;
     ">
   <div style="display: flex">
-    <img style="width: 30px; height: 30px" src="" alt="profile" />
+
+    <a href="/users/{{post.owner}}">
+      <img style="width: 30px; height: 30px" src="{{post.owner_img_url}}" alt="profile" />
+    </a>
     <p style="flex: 1">
       <a href="/users/{{post.owner}}/">{{post.owner}} </a>
     </p>
     <p>
-      <a href="/posts/{{post.postid}}/"> {{post.created}} </a>
+      <a href="/posts/{{post.postid}}/"> {{post.created_human}} </a>
     </p>
   </div>
   <img style="width: 350px" src="{{post.url}}" alt="chickens" />
@@ -58,6 +61,27 @@
       {{comment.text}}
     </p>
     {% endfor %}
+    <!-- Like or Unlike button based on owner_liked -->
+    {% if post.owner_liked %}
+    <form action="/likes/?target=/" method="post" enctype="multipart/form-data">
+      <input type="hidden" name="operation" value="unlike" />
+      <input type="hidden" name="postid" value="{{post.postid}}" />
+      <input type="submit" name="unlike" value="unlike" />
+    </form>
+    {% else %}
+    <form action="/likes/?target=/" method="post" enctype="multipart/form-data">
+      <input type="hidden" name="operation" value="like" />
+      <input type="hidden" name="postid" value="{{post.postid}}" />
+      <input type="submit" name="like" value="Like" />
+    </form>
+    {% endif %}
+    <!-- Comment form -->
+    <form action="/comments/?target=/" method="post" enctype="multipart/form-data">
+      <input type="hidden" name="operation" value="create" />
+      <input type="hidden" name="postid" value="{{post.postid}}" />
+      <input type="text" name="text" required />
+      <input type="submit" name="comment" value="comment" />
+    </form>
   </div>
 </div>
 {% endfor %}
