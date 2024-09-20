@@ -47,7 +47,9 @@
   </form>
   {% endif %}
   {% if is_user %}
-  <p><em>Edit profile</em></p>
+  <a href="/accounts/edit">
+    <p>Edit profile</p>
+  </a>
   <form action="/accounts/logout/" method="post" enctype="multipart/form-data">
     <input type="submit" name="logout" value="Logout" />
   </form>
