@@ -9,11 +9,23 @@ import flask
 import arrow
 from flask import request
 from pathlib import Path
+import uuid
+import hashlib
 
 import insta485
 
+algorithm = 'sha512'
+salt = uuid.uuid4().hex
 # Logged-in user's username
 logname = "awdeorio"
+
+def get_hashed_password(password):
+    hash_obj = hashlib.new(algorithm)
+    password_salted = salt + password
+    hash_obj.update(password_salted.encode('utf-8'))
+    password_hash = hash_obj.hexdigest()
+    password_db_string = "$".join([algorithm, salt, password_hash])
+    return password_db_string
 
 @insta485.app.route("/accounts/login/")
 def show_login():
@@ -61,11 +73,27 @@ def update_accounts():
     filename = request.files["file"]
     operation = request.form["operation"]
 
+    password_db_string = get_hashed_password(password)
+
+
     if operation == "create":
         filename.save(Path.cwd() / "sql" / "uploads" / filename.filename)
         connection.execute(
             "INSERT INTO users (USERNAME, FULLNAME, EMAIL, PASSWORD, FILENAME) VALUES (?, ?, ?, ?, ?)",
-            (username, fullname, email, password, filename.filename)
+            (username, fullname, email, password_db_string, filename.filename)
+        )
+    elif operation == "edit_account":
+        # Delete the old file
+        old_filename = connection.execute(
+            "SELECT FILENAME FROM users WHERE USERNAME = ?",
+            (logname, )
+        ).fetchone()
+        old_file_path = Path.cwd() / "sql" / "uploads" / old_filename["FILENAME"]
+        old_file_path.delete()
+        filename.save(Path.cwd() / "sql" / "uploads" / filename.filename)
+        connection.execute(
+            "UPDATE users SET FULLNAME = ?, EMAIL = ?, FILENAME = ? WHERE USERNAME = ?",
+            (fullname, email, filename.filename, logname)
         )
 
     return flask.redirect(target)

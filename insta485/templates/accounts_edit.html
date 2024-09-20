@@ -33,7 +33,7 @@
     ">
     <img src="{{profile.filename}}" alt="profile picture" style="width: 100px; height: 100px;">
     <p>{{profile.username}}</p>
-    <form action="<FIXME_ACCOUNTS_URL_HERE>?target=<FIXME_CURRENT_URL_HERE>" method="post" enctype="multipart/form-data">
+    <form action="/accounts/" method="post" enctype="multipart/form-data">
         <p>
             <label for ="i"><strong>Photo</strong></label>
             <input type="file" id = "i" name="file" accept="image/*"/>
