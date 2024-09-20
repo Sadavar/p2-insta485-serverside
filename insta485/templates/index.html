@@ -46,7 +46,7 @@
       <a href="/posts/{{post.postid}}/"> {{post.created}} </a>
     </p>
   </div>
-  <img style="width: 350px" src="/uploads/{{post.filename}}" alt="chickens" />
+  <img style="width: 350px" src="{{post.url}}" alt="chickens" />
   <div style="padding: 5px; width: 340px">
     <p>
       {% if post.likes == 1 %} {{post.likes}} like {% else %} {{post.likes}}

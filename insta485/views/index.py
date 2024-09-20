@@ -17,7 +17,7 @@ def show_index():
     # Connect to database
     connection = insta485.model.get_db()
 
-    # Query database
+    # Get users
     logname = "awdeorio"
     cur = connection.execute(
         "SELECT username, fullname "
@@ -27,6 +27,7 @@ def show_index():
     )
     users = cur.fetchall()
 
+    # Get posts
     cur = connection.execute(
         "SELECT * "
         "FROM posts "
@@ -34,6 +35,10 @@ def show_index():
         (logname, )
     )
     posts = cur.fetchall()
+
+    # Add image urls to posts
+    for post in posts:
+        post["url"] = f"/uploads/{post['filename']}"
 
     # Add database info to context
     context = {"users": users, "posts": posts}
