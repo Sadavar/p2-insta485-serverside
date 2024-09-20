@@ -28,11 +28,26 @@
       margin-right: auto;
     ">
     <form action="<FIXME_ACCOUNTS_URL_HERE>?target=<FIXME_INDEX_URL_HERE>" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" required/>
-        <input type="text" name="fullname" placeholder="full name" required/>
-        <input type="text" name="username" placeholder="username" required/>
-        <input type="text" name="email" placeholder="email" required/>
+    <p>
+        <label for ="i"><strong>Photo</strong></label>
+        <input id="i" type="file" name="file" required/>
+    </p>
+    <p>
+        <label for ="f"><strong>Name</strong></label>
+        <input id="f" type="text" name="fullname" placeholder="full name" required/>
+    </p>
+    <p>
+        <label for ="u"><strong>Username</strong></label>
+        <input id="u" type="text" name="username" placeholder="username" required/>
+    </p>
+    <p>
+        <label for ="e"><strong>Email</strong></label>
+        <input id="e" type="text" name="email" placeholder="email" required/>
+    </p>
+    <p>
+        <label for ="p"><strong>Password</strong></label>
         <input type="password" name="password" placeholder="password" required/>
+    </p>
         <input type="submit" name="signup" value="sign up"/>
         <input type="hidden" name="operation" value="create"/>
     </form>
