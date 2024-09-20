@@ -15,6 +15,7 @@ import insta485
 
 logname = "awdeorio"
 
+
 @insta485.app.route("/users/<user_url_slug>/")
 def show_user(user_url_slug):
     username = user_url_slug
@@ -66,10 +67,11 @@ def show_user(user_url_slug):
     )
     is_following = cur.fetchone() is not None
 
-
     # Add database info to context
-    context = {"username": user["username"], "posts": posts, "fullname": user["fullname"], "total_posts": len(posts), "following": following, "followers": followers, "is_user": is_user, "is_following": is_following, "logname": logname}
+    context = {"username": user["username"], "posts": posts, "fullname": user["fullname"], "total_posts": len(
+        posts), "following": following, "followers": followers, "is_user": is_user, "is_following": is_following, "logname": logname}
     return flask.render_template("user.html", **context)
+
 
 @insta485.app.route("/users/<user_url_slug>/followers/")
 def show_followers(user_url_slug):
@@ -86,7 +88,8 @@ def show_followers(user_url_slug):
     print(followers, file=sys.stderr)
     # Get follower profiles
     cur = connection.execute(
-        "SELECT * FROM users WHERE username IN ({seq})".format(seq=','.join(['?']*len(followers))),
+        "SELECT * FROM users WHERE username IN ({seq})".format(
+            seq=','.join(['?']*len(followers))),
         followers
     )
     followers = cur.fetchall()
@@ -98,8 +101,10 @@ def show_followers(user_url_slug):
             (logname, follower["username"])
         )
         follower["is_following"] = cur.fetchone() is not None
-    context = {"followers": followers, "logname": logname}
+    context = {"followers": followers,
+               "logname": logname, "username": username}
     return flask.render_template("followers.html", **context)
+
 
 @insta485.app.route("/users/<user_url_slug>/following/")
 def show_following(user_url_slug):
@@ -116,7 +121,8 @@ def show_following(user_url_slug):
     print(following, file=sys.stderr)
     # Get follower profiles
     cur = connection.execute(
-        "SELECT * FROM users WHERE username IN ({seq})".format(seq=','.join(['?']*len(following))),
+        "SELECT * FROM users WHERE username IN ({seq})".format(
+            seq=','.join(['?']*len(following))),
         following
     )
     following = cur.fetchall()
@@ -128,5 +134,6 @@ def show_following(user_url_slug):
             (logname, follower["username"])
         )
         follower["is_following"] = cur.fetchone() is not None
-    context = {"following": following, "logname": logname}
+    context = {"following": following,
+               "logname": logname, "username": username}
     return flask.render_template("following.html", **context)

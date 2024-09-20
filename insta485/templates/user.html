@@ -1,85 +1,83 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <title>Insta485</title>
-    <style>
-      a {
-        font-weight: 600;
-        color: black;
-        text-decoration: none;
-      }
-    </style>
-  </head>
-  <div style="display: flex">
-    <div style="flex: 1">
-      <a href="/">Insta485</a>
-    </div>
-    <div>
-      <a href="/explore/">
-        <em> explore </em>
-      </a>
-      |
-      <a href="/users/{{logname}}/">
-        <em> {{logname}} </em>
-      </a>
-    </div>
+
+<head>
+  <title>Insta485</title>
+  <style>
+    a {
+      font-weight: 600;
+      color: black;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<div style="display: flex">
+  <div style="flex: 1">
+    <a href="/">Insta485</a>
   </div>
-  <div
-    style="
+  <div>
+    <a href="/explore/">
+      <em> explore </em>
+    </a>
+    |
+    <a href="/users/{{logname}}/">
+      <em> {{logname}} </em>
+    </a>
+  </div>
+</div>
+<div style="
       width: 800px;
       max-width: fit-content;
       margin-left: auto;
       margin-right: auto;
-    "
-  >
-    <h1>{{username}}</h1>
-    {% if not is_user and not is_following %}
-    <form action="<FIXME_FOLLOWING_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
-      <input type="submit" name="follow" value="follow"/>
-      <input type="hidden" name="username" value="<FIXME_USERNAME_HERE>"/>
-      <input type="hidden" name="operation" value="follow"/>
-    </form>
-    {% endif %}
-    {% if not is_user and is_following %}
-    <form action="<FIXME_FOLLOWING_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
-      <input type="submit" name="unfollow" value="unfollow"/>
-      <input type="hidden" name="username" value="<FIXME_USERNAME_HERE>"/>
-      <input type="hidden" name="operation" value="unfollow"/>
-    </form>
-    {% endif %}
-    {% if is_user %}
-      <p><em>Edit profile</em></p>
-      <form action="<FIXME_LOGOUT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
-        <input type="submit" name="logout" value="Logout"/>
-      </form>
-    {% endif %}
-    <div style="display: flex">
-      <p style="padding: 5px">{{total_posts}} {% if total_posts == 1%} post {% else %} posts {% endif %}</p>
-      <p style="padding: 5px">
-        <a href="/users/{{username}}/followers/"> {{followers}} {% if followers == 1%} follower {% else %} followers {% endif %}</a>
-      </p>
-      <p style="padding: 5px">
-        <a href="/users/{{username}}/following/"> {{following}} following </a>
-      </p>
-    </div>
-    <p>{{fullname}}</p>
-    {% if is_user %}
-    <form action="<FIXME_POSTS_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
-      <input type="file" name="file" accept="image/*" required/>
-      <input type="submit" name="create_post" value="upload new post"/>
-      <input type="hidden" name="operation" value="create"/>
-    </form>
-    {% endif %}
-    {% for post in posts %}
-    <div style="display: flex">
-      <a href="/posts/{{post.postid}}/">
-        <img
-          style="width: 350px; padding: 5px"
-          src="{{post.filename}}"
-          alt="post 1"
-        />
-      </a>
-    </div>
-    {% endfor %}
+    ">
+  <h1>{{username}}</h1>
+  {% if not is_user and not is_following %}
+  <form action="/following/?target=/users/{{username}}/" method="post" enctype="multipart/form-data">
+    <input type="submit" name="follow" value="follow" />
+    <input type="hidden" name="username" value="{{username}}" />
+    <input type="hidden" name="operation" value="follow" />
+  </form>
+  {% endif %}
+  {% if not is_user and is_following %}
+  <form action="/following/?target=/users/{{username}}/" method="post" enctype="multipart/form-data">
+    <input type="submit" name="unfollow" value="unfollow" />
+    <input type="hidden" name="username" value="{{username}}" />
+    <input type="hidden" name="operation" value="unfollow" />
+  </form>
+  {% endif %}
+  {% if is_user %}
+  <p><em>Edit profile</em></p>
+  <form action="/accounts/logout/" method="post" enctype="multipart/form-data">
+    <input type="submit" name="logout" value="Logout" />
+  </form>
+  {% endif %}
+  <div style="display: flex">
+    <p style="padding: 5px">{{total_posts}} {% if total_posts == 1%} post {% else %} posts {% endif %}</p>
+    <p style="padding: 5px">
+      <a href="/users/{{username}}/followers/"> {{followers}} {% if followers == 1%} follower {% else %} followers {%
+        endif %}</a>
+    </p>
+    <p style="padding: 5px">
+      <a href="/users/{{username}}/following/"> {{following}} following </a>
+    </p>
   </div>
+  <p>{{fullname}}</p>
+  {% if is_user %}
+  <form action="<FIXME_POSTS_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post"
+    enctype="multipart/form-data">
+    <input type="file" name="file" accept="image/*" required />
+    <input type="submit" name="create_post" value="upload new post" />
+    <input type="hidden" name="operation" value="create" />
+  </form>
+  {% endif %}
+  {% for post in posts %}
+  <div style="display: flex">
+    <a href="/posts/{{post.postid}}/">
+      <img style="width: 350px; padding: 5px" src="{{post.filename}}" alt="post 1" />
+    </a>
+  </div>
+  {% endfor %}
+</div>
+
 </html>

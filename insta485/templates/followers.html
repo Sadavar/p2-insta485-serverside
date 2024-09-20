@@ -1,67 +1,63 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <title>Insta485</title>
-    <style>
-      a {
-        font-weight: 600;
-        color: black;
-        text-decoration: none;
-      }
-    </style>
-  </head>
-  <div style="display: flex">
-    <div style="flex: 1">
-      <a href="/">Insta485</a>
-    </div>
-    <div>
-      <a href="/explore/">
-        <em> explore </em>
-      </a>
-      |
-      <a href="/users/{{logname}}/">
-        <em> {{logname}} </em>
-      </a>
-    </div>
+
+<head>
+  <title>Insta485</title>
+  <style>
+    a {
+      font-weight: 600;
+      color: black;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<div style="display: flex">
+  <div style="flex: 1">
+    <a href="/">Insta485</a>
   </div>
-  <div
-    style="
+  <div>
+    <a href="/explore/">
+      <em> explore </em>
+    </a>
+    |
+    <a href="/users/{{logname}}/">
+      <em> {{logname}} </em>
+    </a>
+  </div>
+</div>
+<div style="
       flex-direction: column;
       max-width: fit-content;
       margin-left: auto;
       margin-right: auto;
-    "
-  >
-    <h1>Followers</h1>
-    {% for follower in followers %}
-    <div style="display: flex; flex-direction: row; align-items: center">
-      <img
-        src="{{follower.filename}}"
-        style="height: 30px; width: 30px; padding: 20px"
-        alt="profile"
-      />
-      <em style="padding: 20px">
-        <a href="/users/{{follower.username}}/"> {{follower.username}} </a>
-      </em>
-      <p style="padding: 20px">
-        {% if follower.username == logname %}
-        {% elif follower.is_following %} 
-        following
-        <form action="<FIXME_FOLLOWING_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
-          <input type="submit" name="unfollow" value="unfollow"/>
-          <input type="hidden" name="username" value="<FIXME_USERNAME_HERE>"/>
-          <input type="hidden" name="operation" value="unfollow"/>
-        </form>
-        {% else %}
-        not following
-        <form action="<FIXME_FOLLOWING_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
-          <input type="submit" name="follow" value="follow"/>
-          <input type="hidden" name="username" value="<FIXME_USERNAME_HERE>"/>
-          <input type="hidden" name="operation" value="follow"/>
-        </form>
-        {% endif %}
-      </p>
-    </div>
-    {% endfor %}
+    ">
+  <h1>Followers</h1>
+  {% for follower in followers %}
+  <div style="display: flex; flex-direction: row; align-items: center">
+    <img src="{{follower.filename}}" style="height: 30px; width: 30px; padding: 20px" alt="profile" />
+    <em style="padding: 20px">
+      <a href="/users/{{follower.username}}/"> {{follower.username}} </a>
+    </em>
+    <p style="padding: 20px">
+      {% if follower.username == logname %}
+      {% elif follower.is_following %}
+      following
+    <form action="/following/?target=/users/{{username}}/followers" method="post" enctype="multipart/form-data">
+      <input type="hidden" name="username" value="{{follower.username}}" />
+      <input type="hidden" name="operation" value="unfollow" />
+      <input type="submit" name="unfollow" value="unfollow" />
+    </form>
+    {% else %}
+    not following
+    <form action="/following/?target=/users/{{username}}/followers" method="post" enctype="multipart/form-data">
+      <input type="hidden" name="username" value="{{follower.username}}" />
+      <input type="hidden" name="operation" value="follow" />
+      <input type="submit" name="follow" value="follow" />
+    </form>
+    {% endif %}
+    </p>
   </div>
+  {% endfor %}
+</div>
+
 </html>

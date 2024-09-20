@@ -68,5 +68,4 @@ def update_comments():
     else:
         abort(400)
 
-    # return with a 303 status code
-    return redirect(target)
+    return redirect(target, code=303)
