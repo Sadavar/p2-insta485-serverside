@@ -67,7 +67,7 @@ def show_user(username):
 
 
     # Add database info to context
-    context = {"username": user["username"], "posts": posts, "fullname": user["fullname"], "total_posts": len(posts), "following": following, "followers": followers, "is_user": is_user, "is_following": is_following}
+    context = {"username": user["username"], "posts": posts, "fullname": user["fullname"], "total_posts": len(posts), "following": following, "followers": followers, "is_user": is_user, "is_following": is_following, "logname": logname}
     return flask.render_template("user.html", **context)
 
 @insta485.app.route("/users/<username>/followers/")
