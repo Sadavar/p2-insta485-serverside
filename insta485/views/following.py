@@ -1,6 +1,6 @@
 import flask
 import insta485
-from flask import redirect, url_for, request, abort
+from flask import redirect, url_for, request, abort, session
 
 LOGGER = flask.logging.create_logger(insta485.app)
 
@@ -17,7 +17,7 @@ def update_following():
     LOGGER.debug("operation = %s", operation)
     LOGGER.debug("username = %s", username)
 
-    logname = "awdeorio"
+    logname = session.get("logname")
 
     # Check if the user is logged in
     if logname is None:

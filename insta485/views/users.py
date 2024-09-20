@@ -10,20 +10,22 @@ URLs include:
 from pathlib import Path
 import sys
 import flask
+from flask import session, abort
 
 import insta485
-
-logname = "awdeorio"
 
 
 @insta485.app.route("/users/<user_url_slug>/")
 def show_user(user_url_slug):
     username = user_url_slug
-    """Display / route."""
+    logname = session.get("logname")
+    if logname is None:
+        return flask.redirect("/accounts/login/")
+
     # Connect to database
     connection = insta485.model.get_db()
 
-    # Get user
+    # get user
     cur = connection.execute(
         "SELECT * "
         "FROM users "
@@ -31,7 +33,10 @@ def show_user(user_url_slug):
         (username, )
     )
     user = cur.fetchone()
-    print(user, file=sys.stderr)
+    if user is None:
+        abort(404)
+
+    user = cur.fetchone()
 
     # Get array of posts
     cur = connection.execute(
@@ -41,7 +46,6 @@ def show_user(user_url_slug):
         (username, )
     )
     posts = cur.fetchall()
-    print(posts, file=sys.stderr)
 
     # Get following
     cur = connection.execute(
@@ -76,6 +80,10 @@ def show_user(user_url_slug):
 @insta485.app.route("/users/<user_url_slug>/followers/")
 def show_followers(user_url_slug):
     username = user_url_slug
+    logname = session.get("logname")
+    if logname is None:
+        return flask.redirect("/accounts/login/")
+
     # Connect to database
     connection = insta485.model.get_db()
     # Get followers
@@ -109,6 +117,10 @@ def show_followers(user_url_slug):
 @insta485.app.route("/users/<user_url_slug>/following/")
 def show_following(user_url_slug):
     username = user_url_slug
+    logname = session.get("logname")
+    if logname is None:
+        return flask.redirect("/accounts/login/")
+
     # Connect to database
     connection = insta485.model.get_db()
     # Get followers

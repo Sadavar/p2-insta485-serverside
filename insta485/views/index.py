@@ -6,6 +6,7 @@ URLs include:
 """
 
 import flask
+from flask import session
 import arrow
 
 import insta485
@@ -18,8 +19,9 @@ def show_index():
     # Connect to database
     connection = insta485.model.get_db()
 
-    # Get users
-    logname = "awdeorio"
+    logname = session.get("logname")
+    if logname is None:
+        return flask.redirect("/accounts/login/")
 
     # get all posts from logged in user, and all other users that logged in user follows
     cur = connection.execute(
@@ -78,7 +80,6 @@ def show_index():
         )
         owner = cur.fetchone()
         post["owner_img_url"] = f"/uploads/{owner['filename']}/"
-        print(f"post img url: {post["owner_img_url"]}")
 
         # oldest comment at the top, break tie with comment id
         post["comments"] = sorted(
