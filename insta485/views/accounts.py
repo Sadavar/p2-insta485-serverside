@@ -64,8 +64,8 @@ def show_password():
 
 @insta485.app.route("/accounts/", methods=["POST"])
 def update_accounts():
-    print(request.form, file=sys.stderr)
-    print("poooooooooooop", file=sys.stderr)
+    # Logged-in user's username
+    logname = session.get("logname")
     connection = insta485.model.get_db()
     # Default target to '/' if not provided
     target = request.args.get("target", "/")
@@ -105,6 +105,7 @@ def update_accounts():
         fullname = request.form["fullname"]
         email = request.form["email"]
         filename = request.files["file"]
+        print(get_hashed_password("password"), file=sys.stderr)
 
         # Delete the old file
         old_filename = connection.execute(
@@ -112,7 +113,8 @@ def update_accounts():
             (logname, )
         ).fetchone()
         old_file_path = Path.cwd() / "sql" / "uploads" / old_filename['filename']
-        old_file_path.unlink()
+        if old_file_path.exists():
+            old_file_path.unlink()
         filename.save(Path.cwd() / "sql" / "uploads" / filename.filename)
         # Update the user's information
         connection.execute(
