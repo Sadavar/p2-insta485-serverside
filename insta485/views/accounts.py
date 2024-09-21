@@ -17,6 +17,7 @@ import insta485
 algorithm = 'sha512'
 salt = uuid.uuid4().hex
 
+
 def get_hashed_password(password):
     hash_obj = hashlib.new(algorithm)
     password_salted = salt + password
@@ -25,25 +26,41 @@ def get_hashed_password(password):
     password_db_string = "$".join([algorithm, salt, password_hash])
     return password_db_string
 
+
 @insta485.app.route("/accounts/login/")
 def show_login():
+    logname = session.get("logname")
+    if logname is not None:
+        return flask.redirect("/")
+
     return flask.render_template("accounts_login.html")
+
 
 @insta485.app.route("/accounts/create/")
 def show_create():
+    logname = session.get("logname")
+    if logname is not None:
+        return flask.redirect("/accounts/edit/")
+
     return flask.render_template("accounts_create.html")
+
 
 @insta485.app.route("/accounts/delete/")
 def show_delete():
-    # Logged-in user's username
     logname = session.get("logname")
+    if logname is None:
+        return flask.redirect("/accounts/login/")
+
     context = {"logname": logname}
     return flask.render_template("accounts_delete.html", **context)
 
+
 @insta485.app.route("/accounts/edit/")
 def show_edit():
-    # Logged-in user's username
     logname = session.get("logname")
+    if logname is None:
+        return flask.redirect("/accounts/login/")
+
     connection = insta485.model.get_db()
     cur = connection.execute(
         "SELECT USERNAME, FULLNAME, EMAIL, FILENAME FROM users WHERE USERNAME = ?",
@@ -55,12 +72,16 @@ def show_edit():
     context = {"profile": profile, "logname": logname}
     return flask.render_template("accounts_edit.html", **context)
 
+
 @insta485.app.route("/accounts/password/")
 def show_password():
-    # Logged-in user's username
     logname = session.get("logname")
+    if logname is None:
+        return flask.redirect("/accounts/login/")
+
     context = {"logname": logname}
     return flask.render_template("accounts_password.html", **context)
+
 
 @insta485.app.route("/accounts/", methods=["POST"])
 def update_accounts():
@@ -71,9 +92,10 @@ def update_accounts():
     target = request.args.get("target", "/")
     operation = request.form["operation"]
 
-
-
     if operation == "create":
+        if logname is not None:
+            return flask.redirect(target)
+
         username = request.form["username"]
         fullname = request.form["fullname"]
         email = request.form["email"]
@@ -87,6 +109,9 @@ def update_accounts():
             (username, fullname, email, password_db_string, filename.filename)
         )
     elif operation == "login":
+        if logname is not None:
+            return flask.redirect(target)
+
         username = request.form["username"]
         password = request.form["password"]
         if username == "" or password == "":

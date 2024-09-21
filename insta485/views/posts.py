@@ -6,7 +6,12 @@ URLs include:
 """
 
 import flask
+from flask import session, request, session, abort, redirect
 import arrow
+import pathlib
+from pathlib import Path
+import uuid
+import os
 
 import insta485
 
@@ -19,7 +24,10 @@ def show_post(postid_url_slug):
     connection = insta485.model.get_db()
 
     # get post from database
-    logname = "awdeorio"
+    logname = session.get("logname")
+    if logname is None:
+        return flask.redirect("/accounts/login/")
+
     cur = connection.execute(
         "SELECT * "
         "FROM posts "
@@ -78,3 +86,75 @@ def show_post(postid_url_slug):
         "owner_liked": owner_liked
     }
     return flask.render_template("post.html", **context)
+
+
+@insta485.app.route("/posts/", methods=["POST"])
+def update_post():
+    operation = request.form["operation"]
+    target = request.args.get("target", f"/users/{logname}/")
+    logname = session.get("logname")
+    if logname is None:
+        abort(403)
+
+    connection = insta485.model.get_db()
+
+    if operation == "create":
+        fileobj = request.files.get("file")
+        # Check if the file is empty
+        if not fileobj or fileobj.filename == "":
+            abort(400)
+
+        filename = fileobj.filename
+
+        # Generate UUID-based filename
+        stem = uuid.uuid4().hex
+        suffix = pathlib.Path(filename).suffix.lower()
+        uuid_basename = f"{stem}{suffix}"
+
+        # Define the file path
+        upload_folder = insta485.app.config["UPLOAD_FOLDER"]
+        filepath = pathlib.Path(upload_folder) / uuid_basename
+
+        # Save the file to the uploads directory
+        fileobj.save(filepath)
+
+        # Insert the post into the database
+        connection.execute(
+            "INSERT INTO posts (filename, owner) VALUES (?, ?)",
+            (uuid_basename, logname)
+        )
+
+        # Redirect to target URL
+        return redirect(target)
+
+    # Save file to uploads directory
+    elif operation == "delete":
+        postid = request.form.get("postid")
+
+        # Fetch the post details
+        post = connection.execute(
+            "SELECT filename, owner FROM posts WHERE postid = ?",
+            (postid,)
+        ).fetchone()
+
+        # Check if the post exists and if the user owns the post
+        if post is None or post['owner'] != logname:
+            abort(403)
+
+        # Delete the image file from the filesystem
+        filepath = pathlib.Path(
+            insta485.app.config["UPLOAD_FOLDER"]) / post['filename']
+        if filepath.exists():
+            filepath.unlink()
+
+        # Delete related entries (comments, likes) in the database
+        connection.execute("DELETE FROM comments WHERE postid = ?", (postid,))
+        connection.execute("DELETE FROM likes WHERE postid = ?", (postid,))
+        connection.execute("DELETE FROM posts WHERE postid = ?", (postid,))
+
+        # Redirect to target URL
+        return redirect(target)
+
+    # If operation is not recognized, abort
+    else:
+        abort(400)

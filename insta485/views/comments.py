@@ -1,6 +1,6 @@
 import flask
 import insta485
-from flask import redirect, url_for, request, abort
+from flask import redirect, url_for, request, abort, session
 
 LOGGER = flask.logging.create_logger(insta485.app)
 
@@ -21,7 +21,7 @@ def update_comments():
     LOGGER.debug("commentid = %s", commentid)
     LOGGER.debug("text = %s", text)
 
-    logname = "awdeorio"
+    logname = session.get("logname")
 
     # Check if the user is logged in
     if logname is None:

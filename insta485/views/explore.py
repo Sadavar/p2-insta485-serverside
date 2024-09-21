@@ -6,6 +6,7 @@ URLs include:
 """
 
 import flask
+from flask import session
 import arrow
 
 import insta485
@@ -18,8 +19,9 @@ def show_explore():
     # Connect to database
     connection = insta485.model.get_db()
 
-    # Logged-in user's username
-    logname = "awdeorio"
+    logname = session.get("logname")
+    if logname is None:
+        return flask.redirect("/accounts/login/")
 
     # Get users not followed by the logged-in user
     cur = connection.execute(
