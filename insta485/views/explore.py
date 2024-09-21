@@ -38,7 +38,7 @@ def show_explore():
 
     # Add image URLs to not_following
     for follower in not_following:
-        follower["url"] = f"/uploads/{follower['user_img_url']}/"
+        follower["url"] = f"/uploads/{follower['user_img_url']}"
 
     context = {
         "logname": logname,

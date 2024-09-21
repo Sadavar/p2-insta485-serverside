@@ -39,7 +39,7 @@ def show_post(postid_url_slug):
         return ("", 404)
 
     # add image urls to post
-    post["url"] = f"/uploads/{post['filename']}/"
+    post["url"] = f"/uploads/{post['filename']}"
 
     # get owner of post
     post_owner = post["owner"]
@@ -50,7 +50,7 @@ def show_post(postid_url_slug):
     owner = cur.fetchone()
 
     # add image url to owner
-    owner["url"] = f"/uploads/{owner['filename']}/"
+    owner["url"] = f"/uploads/{owner['filename']}"
 
     # Get likes for the post
     cur = connection.execute(
@@ -82,7 +82,7 @@ def show_post(postid_url_slug):
         "owner": owner,
         "likes": likes,
         "comments": comments,
-        "logname": "awdeorio",
+        "logname": logname,
         "owner_liked": owner_liked
     }
     return flask.render_template("post.html", **context)
@@ -91,8 +91,8 @@ def show_post(postid_url_slug):
 @insta485.app.route("/posts/", methods=["POST"])
 def update_post():
     operation = request.form["operation"]
-    target = request.args.get("target", f"/users/{logname}/")
     logname = session.get("logname")
+    target = request.args.get("target", f"/users/{logname}/")
     if logname is None:
         abort(403)
 

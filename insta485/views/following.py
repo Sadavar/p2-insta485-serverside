@@ -59,4 +59,4 @@ def update_following():
     else:
         abort(400)
 
-    return redirect(target, code=303)
+    return redirect(target)

@@ -66,7 +66,7 @@
   </div>
   <p>{{fullname}}</p>
   {% if is_user %}
-  <form action="<FIXME_POSTS_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post"
+  <form action="/posts/?target=/users/{{logname}}" method="post"
     enctype="multipart/form-data">
     <input type="file" name="file" accept="image/*" required />
     <input type="submit" name="create_post" value="upload new post" />
@@ -80,6 +80,9 @@
     </a>
   </div>
   {% endfor %}
+  {% if not posts %}
+  <p>No posts yet.</p>
+  {% endif %}
 </div>
 
 </html>

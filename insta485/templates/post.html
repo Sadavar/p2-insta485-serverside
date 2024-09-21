@@ -68,13 +68,20 @@
       <input type="hidden" name="postid" value="{{post.postid}}" />
       <input type="submit" name="unlike" value="unlike" />
     </form>
+    {% else %}
+    <!-- Like if owner has liked it-->
+    <form action="/likes/?target=/posts/{{post.postid}}/" method="post" enctype="multipart/form-data">
+      <input type="hidden" name="operation" value="like"/>
+      <input type="hidden" name="postid" value="{{post.postid}}"/>
+      <input type="submit" name="like" value="like"/>
+    </form>
     {% endif %}
     <!-- Comment on Post -->
     <form action="/comments/?target=/posts/{{post.postid}}/" method="post" enctype="multipart/form-data">
-      <input type="hidden" name="operation" value="insert" />
-      <input type="hidden" name="postid" value="{{post.postid}}" />
-      <input type="text" name="text" />
-      <input type="submit" name="comment" value="comment" />
+      <input type="hidden" name="operation" value="create"/>
+      <input type="hidden" name="postid" value="{{post.postid}}"/>
+      <input type="text" name="text" required/>
+      <input type="submit" name="comment" value="comment"/>
     </form>
     {% if post.owner == logname %}
     <!-- Delete Post -->

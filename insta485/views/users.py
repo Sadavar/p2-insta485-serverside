@@ -36,8 +36,6 @@ def show_user(user_url_slug):
     if user is None:
         abort(404)
 
-    user = cur.fetchone()
-
     # Get array of posts
     cur = connection.execute(
         "SELECT * "
@@ -71,6 +69,7 @@ def show_user(user_url_slug):
     )
     is_following = cur.fetchone() is not None
 
+    print(user, file=sys.stderr)
     # Add database info to context
     context = {"username": user["username"], "posts": posts, "fullname": user["fullname"], "total_posts": len(
         posts), "following": following, "followers": followers, "is_user": is_user, "is_following": is_following, "logname": logname}
@@ -102,7 +101,7 @@ def show_followers(user_url_slug):
     )
     followers = cur.fetchall()
     for follower in followers:
-        follower["filename"] = f"/uploads/{follower['filename']}/"
+        follower["filename"] = f"/uploads/{follower['filename']}"
         # check if logname is following
         cur = connection.execute(
             "SELECT * FROM following WHERE username1 == ? AND username2 == ?",

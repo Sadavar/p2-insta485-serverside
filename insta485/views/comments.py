@@ -33,6 +33,7 @@ def update_comments():
     if operation == "create":
         # Ensure that the comment text is not empty
         if not text or not text.strip():
+            print("Comment text cannot be empty", file=flask.stderr)
             abort(400, "Comment text cannot be empty")
 
         # Insert the new comment into the database
@@ -68,4 +69,4 @@ def update_comments():
     else:
         abort(400)
 
-    return redirect(target, code=303)
+    return redirect(target)

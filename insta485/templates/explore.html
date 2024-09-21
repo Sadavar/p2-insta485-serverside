@@ -40,8 +40,9 @@
     </em>
     <!-- Follow button -->
     <form action="/following/?target=/explore/" method="post" enctype="multipart/form-data">
-      <input type="hidden" name="username" value="{{ follower.username }}" />
-      <input type="submit" name="follow" value="Follow" />
+      <input type="submit" name="follow" value="follow"/>
+      <input type="hidden" name="username" value="{{follower.username}}"/>
+      <input type="hidden" name="operation" value="follow"/>
     </form>
   </div>
   {% endfor %}
