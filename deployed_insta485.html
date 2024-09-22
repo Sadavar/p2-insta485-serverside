@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Insta485</title>
+    <style>
+        a {
+            font-weight: 600;
+            color: black;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<div style="display: flex">
+    <div style="flex: 1">
+        <a href="/">Insta485</a>
+    </div>
+    <div>
+        <a href="/accounts/login/">
+            <em> login </em>
+        </a>
+    </div>
+</div>
+<div style="
+      flex-direction: column;
+      max-width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    ">
+    <form action="/accounts/" method="post" enctype="multipart/form-data">
+        <p>
+            <label for="u"><strong>Username</strong></label>
+            <input id="u" type="text" name="username" placeholder="username" required />
+        </p>
+        <p>
+            <label for="p"><strong>Password</strong></label>
+            <input id="p" type="password" name="password" placeholder="password" required />
+        </p>
+        <input type="submit" value="login" />
+        <input type="hidden" name="operation" value="login" />
+    </form>
+    <p>Don't have an account? <a href="/accounts/create/">Sign up</a></p>
+</div>
+
+</html>
