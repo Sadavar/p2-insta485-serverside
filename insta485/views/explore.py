@@ -15,7 +15,6 @@ import insta485
 @insta485.app.route("/explore/")
 def show_explore():
     """Display /explore/ route."""
-
     # Connect to database
     connection = insta485.model.get_db()
 

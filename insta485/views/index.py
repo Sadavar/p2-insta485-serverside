@@ -1,8 +1,11 @@
 """
-Insta485 index (main) view.
+Insta485 Index (Main) View.
+
+This module handles the main index view of the application,
+displaying posts from the logged-in user and those they follow.
 
 URLs include:
-/
+    /
 """
 
 import flask
@@ -14,8 +17,18 @@ import insta485
 
 @insta485.app.route("/")
 def show_index():
-    """Display / route."""
+    """
+    Display the main index page.
 
+    This function retrieves all posts from the logged-in user and
+    the users they follow, sorts them by creation time, and adds
+    additional information such as comments, likes, and human-readable
+    timestamps.
+
+    Returns:
+        Flask Response: The rendered index page
+        or a redirect to login if not logged in.
+    """
     # Connect to database
     connection = insta485.model.get_db()
 

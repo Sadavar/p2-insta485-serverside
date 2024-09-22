@@ -1,10 +1,12 @@
 """
-Insta485 users
+Insta485 Users.
+
+This module handles user profiles
 
 URLs include:
-/users/<user_url_slug>/
-/users/<user_url_slug>/followers/
-/users/<user_url_slug>/following/
+    /users/<user_url_slug>/
+    /users/<user_url_slug>/followers/
+    /users/<user_url_slug>/following/
 """
 
 from pathlib import Path
@@ -17,6 +19,21 @@ import insta485
 
 @insta485.app.route("/users/<user_url_slug>/")
 def show_user(user_url_slug):
+    """
+    Display a user's profile.
+
+    This function retrieves user information, their posts,
+    and their follower/following counts, then renders
+    the user profile page.
+
+    Args:
+        user_url_slug (str): The username of the user
+        whose profile is to be displayed.
+
+    Returns:
+        Flask Response: The rendered user profile page
+        or a redirect to login if not logged in.
+    """
     username = user_url_slug
     logname = session.get("logname")
     if logname is None:
@@ -89,6 +106,20 @@ def show_user(user_url_slug):
 
 @insta485.app.route("/users/<user_url_slug>/followers/")
 def show_followers(user_url_slug):
+    """
+    Display the followers of a user.
+
+    This function retrieves a list of users following the specified user
+    and their profiles, then renders the followers page.
+
+    Args:
+        user_url_slug (str): The username of the user
+        whose followers are to be displayed.
+
+    Returns:
+        Flask Response: The rendered followers page
+        or a redirect to login if not logged in.
+    """
     username = user_url_slug
     logname = session.get("logname")
     if logname is None:
@@ -126,6 +157,20 @@ def show_followers(user_url_slug):
 
 @insta485.app.route("/users/<user_url_slug>/following/")
 def show_following(user_url_slug):
+    """
+    Display the users that a specific user is following.
+
+    This function retrieves a list of users that the specified user
+    is following and their profiles, then renders the following page.
+
+    Args:
+        user_url_slug (str): The username of the user whose
+        following list is to be displayed.
+
+    Returns:
+        Flask Response: The rendered following page
+        or a redirect to login if not logged in.
+    """
     username = user_url_slug
     logname = session.get("logname")
     if logname is None:
