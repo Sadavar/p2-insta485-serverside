@@ -6,7 +6,11 @@ import pathlib
 APPLICATION_ROOT = "/"
 
 # Secret key for encrypting cookies
-SECRET_KEY = b"\xdf\xc0\xacuWQ\x9a\xd4\xb6Z\x82\xc4TE\xd1 \x9d\xaa\x1e\x7f\xb6\xebP\x1a"
+SECRET_KEY = (
+    b"\xdf\xc0\xacuWQ\x9a\xd4\xb6Z\x82\xc4TE\xd1 "
+    b"\x9d\xaa\x1e\x7f\xb6\xebP\x1a"
+)
+
 SESSION_COOKIE_NAME = "login"
 
 # File Upload to var/uploads/

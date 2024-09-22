@@ -25,12 +25,14 @@ def get_hashed_password(password):
     password_db_string = "$".join([algorithm, salt, password_hash])
     return password_db_string
 
+
 def check_password(password, password_db_string):
     algorithm, salt, password_hash = password_db_string.split('$')
     hash_obj = hashlib.new(algorithm)
     password_salted = salt + password
     hash_obj.update(password_salted.encode('utf-8'))
     return password_hash == hash_obj.hexdigest()
+
 
 @insta485.app.route("/accounts/login/")
 def show_login():
@@ -68,7 +70,8 @@ def show_edit():
 
     connection = insta485.model.get_db()
     cur = connection.execute(
-        "SELECT USERNAME, FULLNAME, EMAIL, FILENAME FROM users WHERE USERNAME = ?",
+        "SELECT USERNAME, FULLNAME, EMAIL, FILENAME "
+        "FROM users WHERE USERNAME = ?",
         (logname, )
     )
     profile = cur.fetchone()
@@ -87,11 +90,23 @@ def show_password():
     context = {"logname": logname}
     return flask.render_template("accounts_password.html", **context)
 
+
+@insta485.app.route("/accounts/auth/")
+def auth():
+    logname = session.get("logname")
+    if logname is None:
+        abort(403)
+    else:
+        return "", 200
+        #
+
+
 @insta485.app.route("/accounts/logout/", methods=["POST"])
 def logout():
     # logout the user
     session.pop("logname", None)
     return flask.redirect("/accounts/login/")
+
 
 @insta485.app.route("/accounts/", methods=["POST"])
 def update_accounts():
@@ -115,6 +130,7 @@ def update_accounts():
 
     return flask.redirect(target)
 
+
 def login(logname, connection, target, request):
     if logname is not None:
         return flask.redirect(target)
@@ -137,6 +153,7 @@ def login(logname, connection, target, request):
     else:
         abort(403)
 
+
 def create(logname, connection, target, request):
     if logname is not None:
         return flask.redirect("/accounts/edit/")
@@ -148,9 +165,11 @@ def create(logname, connection, target, request):
     file_obj = request.files["file"]
     password_db_string = get_hashed_password(password)
 
-    if not username or not fullname or not email or not password or file_obj.filename == '':
+    if not username or not fullname or not email:
         abort(400)
-    
+    if not password or file_obj.filename == '':
+        abort(400)
+
     # Check if the username is already taken
     existing_user = connection.execute(
         "SELECT * FROM users WHERE USERNAME = ?",
@@ -167,12 +186,15 @@ def create(logname, connection, target, request):
     file_obj.save(path)
 
     connection.execute(
-        "INSERT INTO users (USERNAME, FULLNAME, EMAIL, PASSWORD, FILENAME) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO users "
+        "(USERNAME, FULLNAME, EMAIL, PASSWORD, FILENAME) "
+        "VALUES (?, ?, ?, ?, ?) ",
         (username, fullname, email, password_db_string, path.name)
     )
 
     session["logname"] = username
     return flask.redirect(target)
+
 
 def delete(logname, connection, target, request):
     if logname is None:
@@ -185,14 +207,15 @@ def delete(logname, connection, target, request):
     pathname = insta485.app.config["UPLOAD_FOLDER"]/filename
     if pathname.exists():
         pathname.unlink()
-    
+
     # Delete the user's post pictures
     post_filenames = connection.execute(
         "SELECT FILENAME FROM posts WHERE OWNER = ?",
         (logname, )
     ).fetchall()
     for post_filename in post_filenames:
-        post_pathname = insta485.app.config["UPLOAD_FOLDER"]/post_filename["filename"]
+        post_pathname = insta485.app.config["UPLOAD_FOLDER"] / \
+            post_filename["filename"]
         if post_pathname.exists():
             post_pathname.unlink()
 
@@ -203,6 +226,7 @@ def delete(logname, connection, target, request):
     )
     session.pop("logname", None)
     return flask.redirect(target)
+
 
 def edit(logname, connection, target, request):
     if logname is None:
@@ -222,7 +246,8 @@ def edit(logname, connection, target, request):
             (logname, )
         ).fetchone()
         if filename:
-            pathname = insta485.app.config["UPLOAD_FOLDER"]/filename["filename"]
+            pathname = insta485.app.config["UPLOAD_FOLDER"] / \
+                filename["filename"]
             if pathname.exists():
                 pathname.unlink()
 
@@ -243,6 +268,7 @@ def edit(logname, connection, target, request):
     )
 
     return flask.redirect(target)
+
 
 def update(logname, connection, target, request):
     if logname is None:

@@ -47,14 +47,16 @@ def show_user(user_url_slug):
 
     # Get following
     cur = connection.execute(
-        "SELECT COUNT(*) AS following_count FROM following WHERE username1 == ?",
+        "SELECT COUNT(*) AS following_count "
+        "FROM following WHERE username1 == ?",
         (username, )
     )
     following = cur.fetchone()["following_count"]
 
     # Get followers
     cur = connection.execute(
-        "SELECT COUNT(*) AS follower_count FROM following WHERE username2 == ?",
+        "SELECT COUNT(*) AS follower_count "
+        "FROM following WHERE username2 == ?",
         (username, )
     )
     followers = cur.fetchone()["follower_count"]
@@ -71,8 +73,17 @@ def show_user(user_url_slug):
 
     print(user, file=sys.stderr)
     # Add database info to context
-    context = {"username": user["username"], "posts": posts, "fullname": user["fullname"], "total_posts": len(
-        posts), "following": following, "followers": followers, "is_user": is_user, "is_following": is_following, "logname": logname}
+    context = {
+        "username": user["username"],
+        "posts": posts,
+        "fullname": user["fullname"],
+        "total_posts": len(posts),
+        "following": following,
+        "followers": followers,
+        "is_user": is_user,
+        "is_following": is_following,
+        "logname": logname
+    }
     return flask.render_template("user.html", **context)
 
 

@@ -28,7 +28,8 @@ def show_explore():
         """
         SELECT username, fullname, filename AS user_img_url
         FROM users
-        WHERE username != ? AND username NOT IN (SELECT username2 FROM following WHERE username1 = ?)
+        WHERE username != ? AND username NOT IN
+        (SELECT username2 FROM following WHERE username1 = ?)
         """,
         (logname, logname)
     )

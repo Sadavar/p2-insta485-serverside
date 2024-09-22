@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Exit immediately if a command exits with a non-zero status
+set -e
+
+# Print each command before executing it
+set -x
+
+# Run code style checks
+pycodestyle insta485
+pydocstyle insta485
+pylint insta485
+
+# Run unit tests
+pytest -v tests

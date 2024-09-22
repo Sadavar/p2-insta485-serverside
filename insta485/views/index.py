@@ -23,7 +23,8 @@ def show_index():
     if logname is None:
         return flask.redirect("/accounts/login/")
 
-    # get all posts from logged in user, and all other users that logged in user follows
+    # get all posts from logged in user
+    # and all other users that logged in user follows
     cur = connection.execute(
         "SELECT * "
         "FROM posts "
