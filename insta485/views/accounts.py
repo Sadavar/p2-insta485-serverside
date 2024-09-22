@@ -78,6 +78,7 @@ def show_edit():
     profile["filename"] = "/uploads/" + profile["filename"]
     print(profile, file=sys.stderr)
     context = {"profile": profile, "logname": logname}
+
     return flask.render_template("accounts_edit.html", **context)
 
 
@@ -98,7 +99,6 @@ def auth():
         abort(403)
     else:
         return "", 200
-        #
 
 
 @insta485.app.route("/accounts/logout/", methods=["POST"])

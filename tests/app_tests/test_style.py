@@ -52,6 +52,7 @@ def test_html(client):
             "operation": "login"
         },
     )
+    print("Login response status code:", response.status_code)
     assert response.status_code == 302
 
     # Clean up
@@ -67,12 +68,14 @@ def test_html(client):
     )
 
     # Verify downloaded pages HTML5 compliances using html5validator
+    print("Running html5validator...")
     print("html5validator --root tmp/localhost")
     subprocess.run([
         "html5validator",
         "--root", "tmp/localhost",
         "--ignore", "JAVA_TOOL_OPTIONS",
     ], check=True)
+    print("html5validator completed successfully.")
 
 
 def assert_no_prohibited_terms(*terms):
@@ -108,20 +111,24 @@ def assert_no_prohibited_terms(*terms):
 def crawl(client, outputdir, todo, done):
     """Recursively render every page provided by 'client', saving to file."""
     if not todo:
+        print("No more URLs to process. Exiting crawl.")
         return
     # Pop a URL off the head of the queue and parse it
     url_pair = todo.popleft()
     hostname = urlparse(url_pair.url).hostname
     path = urlparse(url_pair.url).path
+    print(f"Crawling URL: {url_pair.url}, Source: {url_pair.source}")
 
     # Ignore links outside localhost
     if hostname and hostname not in ["localhost", "127.0.01"]:
         done.add(path)
+        print(f"Ignoring URL outside localhost: {url_pair.url}")
         crawl(client, outputdir, todo, done)
         return
 
     # Ignore links already visited
     if path in done:
+        print(f"Already visited: {path}")
         done.add(path)
         crawl(client, outputdir, todo, done)
         return
@@ -129,12 +136,15 @@ def crawl(client, outputdir, todo, done):
     # Ignore logout route
     if "logout" in path:
         done.add(path)
+        print(f"Ignoring logout route: {path}")
         crawl(client, outputdir, todo, done)
         return
 
     # Download
+    print(f"Downloading: {path} from {url_pair.source}")
     print("GET", path, "FROM", url_pair.source)
     response = client.get(path)
+    print(f"Response status code for {path}: {response.status_code}")
 
     # redirect routes should return 302 status
     redirect_routes = ["/accounts/create/"]
