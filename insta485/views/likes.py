@@ -8,8 +8,9 @@ URLs include:
     /likes/
 """
 import flask
+from flask import redirect, request, abort, session
 import insta485
-from flask import redirect, url_for, request, abort, session
+from insta485.utils import get_db_connection
 
 LOGGER = flask.logging.create_logger(insta485.app)
 
@@ -36,13 +37,9 @@ def update_likes():
     LOGGER.debug("postid = %s", postid)
 
     logname = session.get("logname")
-
-    # Check if the user is logged in
     if logname is None:
         abort(403)
-
-    # Database connection
-    connection = insta485.model.get_db()
+    connection = get_db_connection()
 
     if operation == "like":
         # Check if the user has already liked the post

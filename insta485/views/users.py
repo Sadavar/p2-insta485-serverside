@@ -9,12 +9,13 @@ URLs include:
     /users/<user_url_slug>/following/
 """
 
-from pathlib import Path
 import sys
 import flask
-from flask import session, abort
+from flask import abort, redirect, session
 
 import insta485
+
+from insta485.utils import get_db_connection
 
 
 @insta485.app.route("/users/<user_url_slug>/")
@@ -34,13 +35,12 @@ def show_user(user_url_slug):
         Flask Response: The rendered user profile page
         or a redirect to login if not logged in.
     """
-    username = user_url_slug
     logname = session.get("logname")
     if logname is None:
-        return flask.redirect("/accounts/login/")
+        return redirect("/accounts/login/")
+    connection = get_db_connection()
 
-    # Connect to database
-    connection = insta485.model.get_db()
+    username = user_url_slug
 
     # get user
     cur = connection.execute(
@@ -120,13 +120,12 @@ def show_followers(user_url_slug):
         Flask Response: The rendered followers page
         or a redirect to login if not logged in.
     """
-    username = user_url_slug
     logname = session.get("logname")
     if logname is None:
-        return flask.redirect("/accounts/login/")
+        return redirect("/accounts/login/")
+    connection = get_db_connection()
 
-    # Connect to database
-    connection = insta485.model.get_db()
+    username = user_url_slug
     # Get followers
     cur = connection.execute(
         "SELECT * FROM following WHERE username2 == ?",
@@ -136,11 +135,17 @@ def show_followers(user_url_slug):
     followers = [follower["username1"] for follower in followers]
     print(followers, file=sys.stderr)
     # Get follower profiles
+    # cur = connection.execute(
+    #     "SELECT * FROM users WHERE username IN ({seq})".format(
+    #         seq=','.join(['?']*len(followers))),
+    #     followers
+    # )
     cur = connection.execute(
-        "SELECT * FROM users WHERE username IN ({seq})".format(
-            seq=','.join(['?']*len(followers))),
+        f"SELECT * FROM users WHERE username IN ({','.join(
+            ['?']*len(followers))})",
         followers
     )
+
     followers = cur.fetchall()
     for follower in followers:
         follower["filename"] = f"/uploads/{follower['filename']}"
@@ -171,13 +176,12 @@ def show_following(user_url_slug):
         Flask Response: The rendered following page
         or a redirect to login if not logged in.
     """
-    username = user_url_slug
     logname = session.get("logname")
     if logname is None:
-        return flask.redirect("/accounts/login/")
+        return redirect("/accounts/login/")
+    connection = get_db_connection()
 
-    # Connect to database
-    connection = insta485.model.get_db()
+    username = user_url_slug
     # Get followers
     cur = connection.execute(
         "SELECT * FROM following WHERE username1 == ?",
@@ -187,11 +191,17 @@ def show_following(user_url_slug):
     following = [follower["username2"] for follower in following]
     print(following, file=sys.stderr)
     # Get follower profiles
+    # cur = connection.execute(
+    #     "SELECT * FROM users WHERE username IN ({seq})".format(
+    #         seq=','.join(['?']*len(following))),
+    #     following
+    # )
     cur = connection.execute(
-        "SELECT * FROM users WHERE username IN ({seq})".format(
-            seq=','.join(['?']*len(following))),
+        f"SELECT * FROM users WHERE username IN ({','.join(
+            ['?']*len(following))})",
         following
     )
+
     following = cur.fetchall()
     for follower in following:
         follower["filename"] = f"/uploads/{follower['filename']}"

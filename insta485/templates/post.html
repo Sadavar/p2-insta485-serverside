@@ -11,21 +11,23 @@
     }
   </style>
 </head>
-<div style="display: flex">
-  <div style="flex: 1">
-    <a href="/">Insta485</a>
+
+<body>
+  <div style="display: flex">
+    <div style="flex: 1">
+      <a href="/">Insta485</a>
+    </div>
+    <div>
+      <a href="/explore/">
+        <em> explore </em>
+      </a>
+      |
+      <a href="/users/{{logname}}/">
+        <em> {{logname}} </em>
+      </a>
+    </div>
   </div>
-  <div>
-    <a href="/explore/">
-      <em> explore </em>
-    </a>
-    |
-    <a href="/users/{{logname}}/">
-      <em> {{logname}} </em>
-    </a>
-  </div>
-</div>
-<div style="
+  <div style="
       width: 400px;
       border-style: solid;
       border-color: black;
@@ -35,63 +37,71 @@
       margin-left: auto;
       margin-right: auto;
     ">
-  <div style="display: flex">
-    <a href="/users/{{post.owner}}">
-      <img style="width: 30px; height: 30px" src="{{owner.url}}" alt="profile" />
-    </a>
-    <p style="flex: 1">
-      <a href="/users/{{post.owner}}/">{{post.owner}}</a>
-    </p>
-    <p>
-      <a href="/posts/{{post.postid}}/"> {{post.created}}</a>
-    </p>
+    <div style="display: flex">
+      <a href="/users/{{post.owner}}/">
+        <img style="width: 30px; height: 30px" src="{{owner.url}}" alt="profile" />
+      </a>
+      <p style="flex: 1">
+        <a href="/users/{{post.owner}}/">{{post.owner}}</a>
+      </p>
+      <p>
+        <a href="/posts/{{post.postid}}/"> {{post.created}}</a>
+      </p>
+    </div>
+    <img style="width: 350px" src="{{post.url}}" alt="chickens" />
+    <div style="padding: 5px; width: 340px">
+      <p>{{likes}} likes</p>
+      {% for comment in comments %}
+      <div>
+        <p>
+          <a href="/users/{{comment.owner}}/">{{comment.owner}}</a>
+          {{comment.text}}
+          {% if comment.owner == logname %}
+        </p>
+        <!-- Delete comment if you own it -->
+        <form action="/comments/?target=/posts/{{post.postid}}/" method="post" enctype="multipart/form-data">
+          <input type="hidden" name="operation" value="delete" />
+          <input type="hidden" name="commentid" value="{{comment.commentid}}" />
+          <input type="submit" name="uncomment" value="delete" />
+        </form>
+        {% endif %}
+      </div>
+      {% endfor %}
+
+      <!-- Unlike if owner has liked it-->
+      {% if owner_liked %}
+      <form action="/likes/?target=/posts/{{post.postid}}/" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="operation" value="unlike" />
+        <input type="hidden" name="postid" value="{{post.postid}}" />
+        <input type="submit" name="unlike" value="unlike" />
+      </form>
+      {% else %}
+      <!-- Like if owner has liked it-->
+      <form action="/likes/?target=/posts/{{post.postid}}/" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="operation" value="like" />
+        <input type="hidden" name="postid" value="{{post.postid}}" />
+        <input type="submit" name="like" value="like" />
+      </form>
+      {% endif %}
+
+      <!-- Comment on Post -->
+      <form action="/comments/?target=/posts/{{post.postid}}/" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="operation" value="create" />
+        <input type="hidden" name="postid" value="{{post.postid}}" />
+        <input type="text" name="text" required />
+        <input type="submit" name="comment" value="comment" />
+      </form>
+
+      {% if post.owner == logname %}
+      <!-- Delete Post -->
+      <form action="/posts/?target=/users/{{logname}}/" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="operation" value="delete" />
+        <input type="hidden" name="postid" value="{{post.postid}}" />
+        <input type="submit" name="delete" value="delete this post" />
+      </form>
+      {% endif %}
+    </div>
   </div>
-  <img style="width: 350px" src="{{post.url}}" alt="chickens" />
-  <div style="padding: 5px; width: 340px">
-    <p>{{likes}} likes</p>
-    {% for comment in comments %}
-    <p>
-      <a href="/users/{{comment.owner}}/">{{comment.owner}}</a>
-      {{comment.text}} {% if comment.owner == logname %} <!-- Delete comment if you own it -->
-    <form action="/comments/?target=/posts/{{post.postid}}/" method="post" enctype="multipart/form-data">
-      <input type="hidden" name="operation" value="delete" />
-      <input type="hidden" name="commentid" value="{{comment.commentid}}" />
-      <input type="submit" name="uncomment" value="delete" />
-    </form>
-    {% endif %}
-    </p>
-    {% endfor %}
-    <!-- Unlike if owner has liked it-->
-    {% if owner_liked %}
-    <form action="/likes/?target=/posts/{{post.postid}}/" method="post" enctype="multipart/form-data">
-      <input type="hidden" name="operation" value="unlike" />
-      <input type="hidden" name="postid" value="{{post.postid}}" />
-      <input type="submit" name="unlike" value="unlike" />
-    </form>
-    {% else %}
-    <!-- Like if owner has liked it-->
-    <form action="/likes/?target=/posts/{{post.postid}}/" method="post" enctype="multipart/form-data">
-      <input type="hidden" name="operation" value="like"/>
-      <input type="hidden" name="postid" value="{{post.postid}}"/>
-      <input type="submit" name="like" value="like"/>
-    </form>
-    {% endif %}
-    <!-- Comment on Post -->
-    <form action="/comments/?target=/posts/{{post.postid}}/" method="post" enctype="multipart/form-data">
-      <input type="hidden" name="operation" value="create"/>
-      <input type="hidden" name="postid" value="{{post.postid}}"/>
-      <input type="text" name="text" required/>
-      <input type="submit" name="comment" value="comment"/>
-    </form>
-    {% if post.owner == logname %}
-    <!-- Delete Post -->
-    <form action="/posts/?target=/users/{{logname}}/" method="post" enctype="multipart/form-data">
-      <input type="hidden" name="operation" value="delete" />
-      <input type="hidden" name="postid" value="{{post.postid}}" />
-      <input type="submit" name="delete" value="delete this post" />
-    </form>
-    {% endif %}
-  </div>
-</div>
+</body>
 
 </html>

@@ -13,14 +13,15 @@ URLs include:
 """
 
 import sys
-import flask
-import arrow
-from flask import request, abort, session
-from pathlib import Path
+import pathlib
 import uuid
 import hashlib
+import flask
+from flask import request, abort, session, redirect
 
 import insta485
+
+from insta485.utils import get_db_connection
 
 
 def get_hashed_password(password):
@@ -74,10 +75,10 @@ def show_login():
         redirect to home if logged in.
     """
     logname = session.get("logname")
-    if logname is not None:
-        return flask.redirect("/")
+    if logname is None:
+        return flask.render_template("accounts_login.html")
 
-    return flask.render_template("accounts_login.html")
+    return flask.redirect("/")
 
 
 @insta485.app.route("/accounts/create/")
@@ -107,7 +108,7 @@ def show_delete():
     """
     logname = session.get("logname")
     if logname is None:
-        return flask.redirect("/accounts/login/")
+        return redirect("/accounts/login/")
 
     context = {"logname": logname}
     return flask.render_template("accounts_delete.html", **context)
@@ -124,7 +125,8 @@ def show_edit():
     """
     logname = session.get("logname")
     if logname is None:
-        return flask.redirect("/accounts/login/")
+        return redirect("/accounts/login/")
+    connection = get_db_connection()
 
     connection = insta485.model.get_db()
     cur = connection.execute(
@@ -151,7 +153,7 @@ def show_password():
     """
     logname = session.get("logname")
     if logname is None:
-        return flask.redirect("/accounts/login/")
+        return redirect("/accounts/login/")
 
     context = {"logname": logname}
     return flask.render_template("accounts_password.html", **context)
@@ -172,8 +174,8 @@ def auth():
     logname = session.get("logname")
     if logname is None:
         abort(403)
-    else:
-        return "", 200
+
+    return "", 200
 
 
 @insta485.app.route("/accounts/logout/", methods=["POST"])
@@ -208,20 +210,20 @@ def update_accounts():
     operation = request.form["operation"]
 
     if operation == "login":
-        login(logname, connection, target, request)
+        login(logname, connection, target)
     elif operation == "create":
-        create(logname, connection, target, request)
+        create(logname, connection, target)
     elif operation == "delete":
-        delete(logname, connection, target, request)
+        delete(logname, connection, target)
     elif operation == "edit_account":
-        edit(logname, connection, target, request)
+        edit(logname, connection, target)
     elif operation == "update_password":
-        update(logname, connection, target, request)
+        update(logname, connection, target)
 
     return flask.redirect(target)
 
 
-def login(logname, connection, target, request):
+def login(logname, connection, target):
     """
     Handle user login.
 
@@ -229,7 +231,6 @@ def login(logname, connection, target, request):
         logname (str): The current logged-in username.
         connection: The database connection object.
         target (str): The URL to redirect after login.
-        request: The Flask request object.
 
     Returns:
         Flask Response: Redirects to the target URL if successful.
@@ -256,11 +257,11 @@ def login(logname, connection, target, request):
     if check_password(password, password_db_string):
         session["logname"] = username
         return flask.redirect(target)
-    else:
-        abort(403)
+
+    abort(403)
 
 
-def create(logname, connection, target, request):
+def create(logname, connection, target):
     """
     Handle user account creation.
 
@@ -268,7 +269,6 @@ def create(logname, connection, target, request):
         logname (str): The current logged-in username.
         connection: The database connection object.
         target (str): The URL to redirect after creation.
-        request: The Flask request object.
 
     Returns:
         Flask Response: Redirects to the target URL if successful.
@@ -302,7 +302,7 @@ def create(logname, connection, target, request):
 
     # Save the profile picture
     stem = uuid.uuid4().hex
-    suffix = Path(file_obj.filename).suffix.lower()
+    suffix = pathlib.Path(file_obj.filename).suffix.lower()
     uuid_basename = f"{stem}{suffix}"
     path = insta485.app.config["UPLOAD_FOLDER"]/uuid_basename
     file_obj.save(path)
@@ -318,7 +318,7 @@ def create(logname, connection, target, request):
     return flask.redirect(target)
 
 
-def delete(logname, connection, target, request):
+def delete(logname, connection, target):
     """
     Handle user account deletion.
 
@@ -326,7 +326,6 @@ def delete(logname, connection, target, request):
         logname (str): The logged-in username.
         connection: The database connection object.
         target (str): The URL to redirect after deletion.
-        request: The Flask request object.
 
     Returns:
         Flask Response: Redirects to the target URL after deletion.
@@ -336,6 +335,7 @@ def delete(logname, connection, target, request):
     """
     if logname is None:
         abort(403)
+
     # Delete the user's profile picture
     filename = connection.execute(
         "SELECT FILENAME FROM users WHERE USERNAME = ?",
@@ -365,7 +365,7 @@ def delete(logname, connection, target, request):
     return flask.redirect(target)
 
 
-def edit(logname, connection, target, request):
+def edit(logname, connection, target):
     """
     Edit account function.
 
@@ -373,7 +373,6 @@ def edit(logname, connection, target, request):
         logname (str): The logged-in username.
         connection: The database connection object.
         target (str): The URL to redirect after deletion.
-        request: The Flask request object.
 
     Returns:
         Flask Response: Redirects to the target URL after deletion.
@@ -405,7 +404,7 @@ def edit(logname, connection, target, request):
 
         # Save the profile picture
         stem = uuid.uuid4().hex
-        suffix = Path(file_obj.filename).suffix.lower()
+        suffix = pathlib.Path(file_obj.filename).suffix.lower()
         uuid_basename = f"{stem}{suffix}"
         path = insta485.app.config["UPLOAD_FOLDER"]/uuid_basename
         file_obj.save(path)
@@ -422,7 +421,7 @@ def edit(logname, connection, target, request):
     return flask.redirect(target)
 
 
-def update(logname, connection, target, request):
+def update(logname, connection, target):
     """
     Update account function.
 
@@ -430,7 +429,6 @@ def update(logname, connection, target, request):
         logname (str): The logged-in username.
         connection: The database connection object.
         target (str): The URL to redirect after deletion.
-        request: The Flask request object.
 
     Returns:
         Flask Response: Redirects to the target URL after deletion.

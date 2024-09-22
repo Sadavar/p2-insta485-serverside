@@ -5,10 +5,7 @@ URLs include:
     /uploads/<filename>
 """
 
-from pathlib import Path
-import sys
-
-from flask import Flask, request, abort, send_from_directory, session
+from flask import abort, send_from_directory, session
 
 import insta485
 

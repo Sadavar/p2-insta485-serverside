@@ -42,6 +42,7 @@
       {% if follower.username == logname %}
       {% elif follower.is_following %}
       following
+    </p>
     <form action="/following/?target=/users/{{username}}/followers/" method="post" enctype="multipart/form-data">
       <input type="hidden" name="username" value="{{follower.username}}" />
       <input type="hidden" name="operation" value="unfollow" />
@@ -55,7 +56,6 @@
       <input type="submit" name="follow" value="follow" />
     </form>
     {% endif %}
-    </p>
   </div>
   {% endfor %}
 </div>

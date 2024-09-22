@@ -9,10 +9,13 @@ URLs include:
 """
 
 import flask
-from flask import session
+from flask import session, redirect
+
 import arrow
 
 import insta485
+
+from insta485.utils import get_db_connection
 
 
 @insta485.app.route("/")
@@ -29,12 +32,10 @@ def show_index():
         Flask Response: The rendered index page
         or a redirect to login if not logged in.
     """
-    # Connect to database
-    connection = insta485.model.get_db()
-
     logname = session.get("logname")
     if logname is None:
-        return flask.redirect("/accounts/login/")
+        return redirect("/accounts/login/")
+    connection = get_db_connection()
 
     # get all posts from logged in user
     # and all other users that logged in user follows

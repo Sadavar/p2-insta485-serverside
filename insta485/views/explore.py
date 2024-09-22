@@ -6,21 +6,21 @@ URLs include:
 """
 
 import flask
-from flask import session
-import arrow
+from flask import session, redirect
 
 import insta485
+
+from insta485.utils import get_db_connection
 
 
 @insta485.app.route("/explore/")
 def show_explore():
     """Display /explore/ route."""
     # Connect to database
-    connection = insta485.model.get_db()
-
     logname = session.get("logname")
     if logname is None:
-        return flask.redirect("/accounts/login/")
+        return redirect("/accounts/login/")
+    connection = get_db_connection()
 
     # Get users not followed by the logged-in user
     cur = connection.execute(

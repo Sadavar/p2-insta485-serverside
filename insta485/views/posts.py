@@ -9,15 +9,15 @@ URLs include:
     /posts/ - Create or delete a post
 """
 
-import flask
-from flask import session, request, session, abort, redirect
-import arrow
 import pathlib
-from pathlib import Path
 import uuid
-import os
+import flask
+from flask import request, abort, redirect, session
+import arrow
 
 import insta485
+
+from insta485.utils import get_db_connection
 
 
 @insta485.app.route("/posts/<postid_url_slug>/")
@@ -35,13 +35,10 @@ def show_post(postid_url_slug):
     Returns:
         Flask Response: The rendered post page or a 404 error if not found.
     """
-    # Connect to database
-    connection = insta485.model.get_db()
-
-    # get post from database
     logname = session.get("logname")
     if logname is None:
-        return flask.redirect("/accounts/login/")
+        return redirect("/accounts/login/")
+    connection = get_db_connection()
 
     cur = connection.execute(
         "SELECT * "
@@ -118,13 +115,14 @@ def update_post():
         403: If the user is not logged in or does not own the post.
         400: If the operation is invalid or the file is empty.
     """
-    operation = request.form["operation"]
     logname = session.get("logname")
-    target = request.args.get("target", f"/users/{logname}/")
+    print("getting logname")
     if logname is None:
         abort(403)
+    connection = get_db_connection()
 
-    connection = insta485.model.get_db()
+    operation = request.form["operation"]
+    target = request.args.get("target", f"/users/{logname}/")
 
     if operation == "create":
         fileobj = request.files.get("file")
@@ -155,8 +153,7 @@ def update_post():
         # Redirect to target URL
         return redirect(target)
 
-    # Save file to uploads directory
-    elif operation == "delete":
+    if operation == "delete":
         postid = request.form.get("postid")
 
         # Fetch the post details
@@ -184,5 +181,4 @@ def update_post():
         return redirect(target)
 
     # If operation is not recognized, abort
-    else:
-        abort(400)
+    abort(400)

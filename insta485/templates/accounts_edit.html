@@ -18,11 +18,11 @@
     <div>
         <a href="/explore/">
             <em> explore </em>
-          </a>
-          |
-          <a href="/users/{{logname}}/">
+        </a>
+        |
+        <a href="/users/{{logname}}/">
             <em> {{logname}} </em>
-          </a>
+        </a>
     </div>
 </div>
 <div style="
@@ -35,19 +35,19 @@
     <p>{{profile.username}}</p>
     <form action="/accounts/" method="post" enctype="multipart/form-data">
         <p>
-            <label for ="i"><strong>Photo</strong></label>
-            <input type="file" id = "i" name="file" accept="image/*"/>
+            <label for="photo"><strong>Photo</strong></label>
+            <input type="file" id="photo" name="file" accept="image/*" />
         </p>
         <p>
-            <label for ="f"><strong>Full Name</strong></label>
-            <input type="text" id = "e" name="fullname" value="{{profile.fullname}}" required/>
+            <label for="full-name"><strong>Full Name</strong></label>
+            <input type="text" id="full-name" name="fullname" value="{{profile.fullname}}" required />
         </p>
         <p>
-            <label for="e"><strong>Email</strong></label>
-            <input type="text" id="e" name="email" value="{{profile.email}}" required/>
+            <label for="email"><strong>Email</strong></label>
+            <input type="text" id="email" name="email" value="{{profile.email}}" required />
         </p>
-        <input type="submit" name="update" value="submit"/>
-        <input type="hidden" name="operation" value="edit_account"/>
+        <input type="submit" name="update" value="submit" />
+        <input type="hidden" name="operation" value="edit_account" />
     </form>
     <p><a href="/accounts/password/">Change Password</a></p>
     <p><a href="/accounts/delete/">Delete Account</a></p>
