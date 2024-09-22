@@ -1,3 +1,11 @@
+"""
+This module handles comment-related operations for the Insta485 application.
+
+It provides a route for creating and deleting comments associated with posts.
+Users must be logged in to perform these actions. The module uses Flask's
+routing system and connects to the database to execute the required operations.
+"""
+
 import flask
 import insta485
 from flask import redirect, url_for, request, abort, session
@@ -7,7 +15,30 @@ LOGGER = flask.logging.create_logger(insta485.app)
 
 @insta485.app.route("/comments/", methods=["POST"])
 def update_comments():
+    """
+    Handle POST requests to create or delete comments for posts.
 
+    Extracts the form data to determine the operation (create or delete) and
+    processes the request accordingly. Only logged-in users can perform these
+    actions.
+
+    Methods:
+        POST: The form should contain the following fields:
+            - operation: "create" or "delete"
+            - postid: ID of the post associated with the comment
+            - commentid: ID of the comment to be deleted (only for delete)
+            - text: Text of the comment (only for create)
+            - target: URL to redirect after the operation (default is "/")
+
+    Returns:
+        Redirects to the 'target' URL after the operation.
+
+    Raises:
+        403: If the user is not logged in or trying to delete a comment they
+             do not own.
+        400: If required form data is missing or invalid.
+        404: If the comment to be deleted does not exist.
+    """
     # Extract data from the form
     operation = request.form.get("operation")
     postid = request.form.get("postid")

@@ -1,7 +1,15 @@
 """
-Insta485 accounts
+Insta485 Accounts.
+
+This module handles user account management features including
+login, registration, deletion, editing, and password updates.
 
 URLs include:
+    /accounts/login/       - Display login page
+    /accounts/create/      - Display account creation page
+    /accounts/delete/      - Display account deletion page
+    /accounts/edit/        - Display account editing page
+    /accounts/password/     - Display password update page
 """
 
 import sys
@@ -16,6 +24,18 @@ import insta485
 
 
 def get_hashed_password(password):
+    """
+    Generate a hashed password.
+
+    This function takes a plain text password and returns a
+    hashed password string using SHA-512 with a unique salt.
+
+    Args:
+        password (str): The plain text password to hash.
+
+    Returns:
+        str: A string containing the algorithm, salt, and hashed password.
+    """
     algorithm = 'sha512'
     salt = uuid.uuid4().hex
     hash_obj = hashlib.new(algorithm)
@@ -27,6 +47,16 @@ def get_hashed_password(password):
 
 
 def check_password(password, password_db_string):
+    """
+    Check if the provided password matches the stored hash.
+
+    Args:
+        password (str): The plain text password to check.
+        password_db_string (str): The stored password hash string.
+
+    Returns:
+        bool: True if the password matches, False otherwise.
+    """
     algorithm, salt, password_hash = password_db_string.split('$')
     hash_obj = hashlib.new(algorithm)
     password_salted = salt + password
@@ -36,6 +66,13 @@ def check_password(password, password_db_string):
 
 @insta485.app.route("/accounts/login/")
 def show_login():
+    """
+    Display the login page.
+
+    Returns:
+        Flask Response: The rendered login page or
+        redirect to home if logged in.
+    """
     logname = session.get("logname")
     if logname is not None:
         return flask.redirect("/")
@@ -45,6 +82,13 @@ def show_login():
 
 @insta485.app.route("/accounts/create/")
 def show_create():
+    """
+    Display the account creation page.
+
+    Returns:
+        Flask Response: The rendered account creation page
+        or redirect if logged in.
+    """
     logname = session.get("logname")
     if logname is not None:
         return flask.redirect("/accounts/edit/")
@@ -54,6 +98,13 @@ def show_create():
 
 @insta485.app.route("/accounts/delete/")
 def show_delete():
+    """
+    Display the account deletion page.
+
+    Returns:
+        Flask Response: The rendered account deletion page
+        or redirect if not logged in.
+    """
     logname = session.get("logname")
     if logname is None:
         return flask.redirect("/accounts/login/")
@@ -64,6 +115,13 @@ def show_delete():
 
 @insta485.app.route("/accounts/edit/")
 def show_edit():
+    """
+    Display the account editing page.
+
+    Returns:
+        Flask Response: The rendered account editing page
+        or redirect if not logged in.
+    """
     logname = session.get("logname")
     if logname is None:
         return flask.redirect("/accounts/login/")
@@ -84,6 +142,13 @@ def show_edit():
 
 @insta485.app.route("/accounts/password/")
 def show_password():
+    """
+    Display the password update page.
+
+    Returns:
+        Flask Response: The rendered password update page
+        or redirect if not logged in.
+    """
     logname = session.get("logname")
     if logname is None:
         return flask.redirect("/accounts/login/")
@@ -94,6 +159,16 @@ def show_password():
 
 @insta485.app.route("/accounts/auth/")
 def auth():
+    """
+    Authenticate the user.
+
+    Returns:
+        Flask Response: An empty response with
+        status code 200 if authenticated.
+
+    Raises:
+        403: If the user is not logged in.
+    """
     logname = session.get("logname")
     if logname is None:
         abort(403)
@@ -103,6 +178,12 @@ def auth():
 
 @insta485.app.route("/accounts/logout/", methods=["POST"])
 def logout():
+    """
+    Logout the user.
+
+    Returns:
+        Flask Response: Redirects to the login page.
+    """
     # logout the user
     session.pop("logname", None)
     return flask.redirect("/accounts/login/")
@@ -110,6 +191,15 @@ def logout():
 
 @insta485.app.route("/accounts/", methods=["POST"])
 def update_accounts():
+    """
+    Update user accounts based on the specified operation.
+
+    This function processes login, account creation, deletion,
+    editing, and password updates based on form submission.
+
+    Returns:
+        Flask Response: Redirects to the target URL after the operation.
+    """
     # Logged-in user's username
     logname = session.get("logname")
     connection = insta485.model.get_db()
@@ -132,6 +222,22 @@ def update_accounts():
 
 
 def login(logname, connection, target, request):
+    """
+    Handle user login.
+
+    Args:
+        logname (str): The current logged-in username.
+        connection: The database connection object.
+        target (str): The URL to redirect after login.
+        request: The Flask request object.
+
+    Returns:
+        Flask Response: Redirects to the target URL if successful.
+
+    Raises:
+        400: If username or password is missing.
+        403: If login fails.
+    """
     if logname is not None:
         return flask.redirect(target)
 
@@ -155,6 +261,22 @@ def login(logname, connection, target, request):
 
 
 def create(logname, connection, target, request):
+    """
+    Handle user account creation.
+
+    Args:
+        logname (str): The current logged-in username.
+        connection: The database connection object.
+        target (str): The URL to redirect after creation.
+        request: The Flask request object.
+
+    Returns:
+        Flask Response: Redirects to the target URL if successful.
+
+    Raises:
+        400: If required fields are missing.
+        409: If the username is already taken.
+    """
     if logname is not None:
         return flask.redirect("/accounts/edit/")
 
@@ -197,6 +319,21 @@ def create(logname, connection, target, request):
 
 
 def delete(logname, connection, target, request):
+    """
+    Handle user account deletion.
+
+    Args:
+        logname (str): The logged-in username.
+        connection: The database connection object.
+        target (str): The URL to redirect after deletion.
+        request: The Flask request object.
+
+    Returns:
+        Flask Response: Redirects to the target URL after deletion.
+
+    Raises:
+        403: If the user is not logged in.
+    """
     if logname is None:
         abort(403)
     # Delete the user's profile picture
@@ -229,6 +366,21 @@ def delete(logname, connection, target, request):
 
 
 def edit(logname, connection, target, request):
+    """
+    Edit account function.
+
+    Args:
+        logname (str): The logged-in username.
+        connection: The database connection object.
+        target (str): The URL to redirect after deletion.
+        request: The Flask request object.
+
+    Returns:
+        Flask Response: Redirects to the target URL after deletion.
+
+    Raises:
+        403: If the user is not logged in.
+    """
     if logname is None:
         abort(403)
 
@@ -271,6 +423,21 @@ def edit(logname, connection, target, request):
 
 
 def update(logname, connection, target, request):
+    """
+    Update account function.
+
+    Args:
+        logname (str): The logged-in username.
+        connection: The database connection object.
+        target (str): The URL to redirect after deletion.
+        request: The Flask request object.
+
+    Returns:
+        Flask Response: Redirects to the target URL after deletion.
+
+    Raises:
+        403: If the user is not logged in.
+    """
     if logname is None:
         abort(403)
 

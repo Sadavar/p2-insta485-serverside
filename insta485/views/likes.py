@@ -1,3 +1,12 @@
+"""
+Insta485 Likes Management.
+
+This module handles the liking and unliking
+of posts within the application.
+
+URLs include:
+    /likes/
+"""
 import flask
 import insta485
 from flask import redirect, url_for, request, abort, session
@@ -7,6 +16,16 @@ LOGGER = flask.logging.create_logger(insta485.app)
 
 @insta485.app.route("/likes/", methods=["POST"])
 def update_likes():
+    """
+    Update the like status of a post.
+
+    This function processes like and unlike operations for a post
+    based on the logged-in user's action. It checks the user's
+    session status and updates the database accordingly.
+
+    Returns:
+        Flask Response: A redirect to the target URL or an error response.
+    """
     # Extract data from the form
     operation = request.form["operation"]
     postid = request.form["postid"]

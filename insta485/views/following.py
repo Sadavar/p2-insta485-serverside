@@ -1,3 +1,13 @@
+"""
+Insta485 Following Management.
+
+This module handles the following functionality for
+users in the Insta485 application.
+It allows users to follow or unfollow other users.
+
+Routes:
+    POST /following/ - Updates the following status for a user.
+"""
 import flask
 import insta485
 from flask import redirect, url_for, request, abort, session
@@ -7,7 +17,29 @@ LOGGER = flask.logging.create_logger(insta485.app)
 
 @insta485.app.route("/following/", methods=["POST"])
 def update_following():
+    """
+    Update the following status for a user.
 
+    This function allows the logged-in user to
+    follow or unfollow another user.
+    It checks for the user's login status and
+    validates the operation before
+    performing the database update.
+
+    Args:
+        operation (str): The operation to perform,
+        either "follow" or "unfollow".
+        username (str): The username of the user to follow or unfollow.
+
+    Returns:
+        Flask Response: Redirects to the target URL.
+
+    Raises:
+        403: If the user is not logged in.
+        400: If the operation is invalid.
+        409: If trying to follow a user already being followed or unfollow
+              a user that is not being followed.
+    """
     # Extract data from the form
     operation = request.form["operation"]
     username = request.form.get("username")

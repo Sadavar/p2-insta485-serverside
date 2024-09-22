@@ -1,8 +1,12 @@
 """
-Insta485 index (main) view.
+Insta485 Index (Main) View.
+
+This module handles the main views for the Insta485 application,
+including displaying individual posts and updating posts.
 
 URLs include:
-/
+    /posts/<postid_url_slug>/ - Display a specific post
+    /posts/ - Create or delete a post
 """
 
 import flask
@@ -18,8 +22,19 @@ import insta485
 
 @insta485.app.route("/posts/<postid_url_slug>/")
 def show_post(postid_url_slug):
-    """Display /posts/<post> route."""
+    """
+    Display a specific post.
 
+    This function retrieves a post from the database using the provided
+    post ID slug, along with its owner, likes, and comments. It renders
+    the post details on the post page.
+
+    Args:
+        postid_url_slug (str): The slug of the post to display.
+
+    Returns:
+        Flask Response: The rendered post page or a 404 error if not found.
+    """
     # Connect to database
     connection = insta485.model.get_db()
 
@@ -90,6 +105,19 @@ def show_post(postid_url_slug):
 
 @insta485.app.route("/posts/", methods=["POST"])
 def update_post():
+    """
+    Create or delete a post.
+
+    This function handles the creation of new posts or the deletion
+    of existing posts based on the operation specified in the form.
+
+    Returns:
+        Flask Response: Redirects to the target URL after operation.
+
+    Raises:
+        403: If the user is not logged in or does not own the post.
+        400: If the operation is invalid or the file is empty.
+    """
     operation = request.form["operation"]
     logname = session.get("logname")
     target = request.args.get("target", f"/users/{logname}/")
