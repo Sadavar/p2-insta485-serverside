@@ -7,15 +7,12 @@ displaying posts from the logged-in user and those they follow.
 URLs include:
     /
 """
-
-import flask
+# linter setting
 from flask import session, redirect
-
+import flask
 import arrow
-
-import insta485
-
 from insta485.utils import get_db_connection
+import insta485
 
 
 @insta485.app.route("/")
@@ -32,10 +29,12 @@ def show_index():
         Flask Response: The rendered index page
         or a redirect to login if not logged in.
     """
-    logname = session.get("logname")
-    if logname is None:
-        return redirect("/accounts/login/")
+    # get log and connection
     connection = get_db_connection()
+    user = session.get("logname")
+    if user is None:
+        return redirect("/accounts/login/")
+    logname = user
 
     # get all posts from logged in user
     # and all other users that logged in user follows

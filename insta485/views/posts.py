@@ -35,10 +35,11 @@ def show_post(postid_url_slug):
     Returns:
         Flask Response: The rendered post page or a 404 error if not found.
     """
-    logname = session.get("logname")
-    if logname is None:
+    log = session.get("logname")
+    if log is None:
         return redirect("/accounts/login/")
     connection = get_db_connection()
+    logname = log
 
     cur = connection.execute(
         "SELECT * "
